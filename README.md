@@ -79,6 +79,18 @@ whisperpyannote/
     └── (fichiers audio/vidéo exemples)
 ```
 
+## Contribuer
+
+Les contributions sont les bienvenues ! 
+
+Merci de :
+- Forker ce dépôt,
+- Créer une branche (`git checkout -b feature/AmazingFeature`),
+- Commiter vos modifications (`git commit -m 'Add some AmazingFeature'`),
+- Pousser vers la branche (`git push origin feature/AmazingFeature`),
+- Créer une Pull Request.
+
+  
 ## Technologies utilisées
 
 Ce projet utilise :
