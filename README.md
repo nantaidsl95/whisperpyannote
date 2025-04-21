@@ -51,13 +51,18 @@ python transcribe_and_diarize.py interview.mp4 transcription.txt --whisper_model
 
 ## Token HuggingFace
 
-Le script utilise `pyannote/speaker-diarization-3.0` qui nécessite une authentification.
+Le script utilise le modèle `pyannote/speaker-diarization-3.0` hébergé sur Hugging Face et qui nécessite une authentification.
 
-Créer un token sur [huggingface.co/settings/tokens](https://huggingface.co/settings/tokens) et définir dans votre terminal :
+Avant la première utilisation, vous devez :
+
+1. Aller sur la page du modèle : [https://huggingface.co/pyannote/speaker-diarization-3.0](https://huggingface.co/pyannote/speaker-diarization-3.0)
+2. Cliquer sur **"Agree and access"** pour accepter les conditions d'utilisation.
+3. Créer un token d'accès personnel ici : [https://huggingface.co/settings/tokens](https://huggingface.co/settings/tokens)
+4. Définir ce token dans votre terminal :
 
 ```bash
 export HUGGINGFACE_TOKEN="votre_token_ici"
-```
+
 
 ## Architecture du projet
 
