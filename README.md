@@ -5,7 +5,9 @@
 
 Script Python pour transcrire et diariser automatiquement des fichiers audio ou vidéo, en utilisant [OpenAI Whisper](https://github.com/openai/whisper) et [pyannote-audio](https://github.com/pyannote/pyannote-audio).
 
-## Fonctionnalités
+---
+
+## ✨ Fonctionnalités
 
 - Extraction automatique de l'audio depuis une vidéo.
 - Conversion au format 16kHz mono pour Whisper et Pyannote.
@@ -15,7 +17,9 @@ Script Python pour transcrire et diariser automatiquement des fichiers audio ou 
 - Fichier texte de sortie lisible et horodaté.
 - Barre de progression (`tqdm`) pour visualiser l'avancement.
 
-## Installation
+---
+
+## 🚀 Installation
 
 Cloner ce dépôt :
 ```bash
@@ -31,9 +35,29 @@ pip install -r requirements.txt
 Prérequis :
 - Python 3.8 ou supérieur
 - `ffmpeg` installé sur votre système
-- Un token HuggingFace valide pour la diarisation (`HUGGINGFACE_TOKEN`)
+- Un compte Hugging Face valide (pour pyannote)
 
-## Utilisation
+---
+
+## 🔑 Autoriser l'accès Hugging Face
+
+Le script utilise le modèle `pyannote/speaker-diarization-3.0` hébergé sur Hugging Face, qui nécessite un accès spécifique.
+
+Avant la première utilisation :
+
+1. Allez sur [https://huggingface.co/pyannote/speaker-diarization-3.0](https://huggingface.co/pyannote/speaker-diarization-3.0) et cliquez sur **"Agree and access"** pour accepter les conditions d'utilisation.
+2. Créez un token Hugging Face personnel ici : [https://huggingface.co/settings/tokens](https://huggingface.co/settings/tokens)
+3. Dans votre terminal, exportez votre token :
+
+```bash
+export HUGGINGFACE_TOKEN="votre_token_ici"
+```
+
+Vous êtes maintenant prêt à utiliser le script.
+
+---
+
+## 🛠️ Utilisation
 
 Commande de base :
 ```bash
@@ -49,22 +73,9 @@ Exemple complet :
 python transcribe_and_diarize.py interview.mp4 transcription.txt --whisper_model medium --keep_temp
 ```
 
-## Token HuggingFace
+---
 
-Le script utilise le modèle `pyannote/speaker-diarization-3.0` hébergé sur Hugging Face et qui nécessite une authentification.
-
-Avant la première utilisation, vous devez :
-
-1. Aller sur la page du modèle : [https://huggingface.co/pyannote/speaker-diarization-3.0](https://huggingface.co/pyannote/speaker-diarization-3.0)
-2. Cliquer sur **"Agree and access"** pour accepter les conditions d'utilisation.
-3. Créer un token d'accès personnel ici : [https://huggingface.co/settings/tokens](https://huggingface.co/settings/tokens)
-4. Définir ce token dans votre terminal :
-
-```bash
-export HUGGINGFACE_TOKEN="votre_token_ici"
-
-
-## Architecture du projet
+## 📂 Architecture du projet
 
 ```
 whisperpyannote/
@@ -76,27 +87,17 @@ whisperpyannote/
 ├── transcribe_and_diarize.py
 ├── whisperpyannote/
 │   ├── __init__.py
+│   ├── main.py
 │   ├── utils.py
 │   ├── transcription.py
-│   ├── diarization.py
-│   └── main.py
+│   └── diarization.py
 └── examples/
     └── (fichiers audio/vidéo exemples)
 ```
 
-## Contribuer
+---
 
-Les contributions sont les bienvenues ! 
-
-Merci de :
-- Forker ce dépôt,
-- Créer une branche (`git checkout -b feature/AmazingFeature`),
-- Commiter vos modifications (`git commit -m 'Add some AmazingFeature'`),
-- Pousser vers la branche (`git push origin feature/AmazingFeature`),
-- Créer une Pull Request.
-
-  
-## Technologies utilisées
+## 🧩 Technologies utilisées
 
 Ce projet utilise :
 
@@ -105,11 +106,28 @@ Ce projet utilise :
 
 Merci aux équipes respectives pour leurs travaux exceptionnels !
 
-## Licence
+---
+
+## 🤝 Contribuer
+
+Les contributions sont les bienvenues !
+
+Merci de suivre ces étapes :
+1. Forker ce dépôt.
+2. Créer une branche (`git checkout -b feature/AmazingFeature`).
+3. Commiter vos modifications (`git commit -m 'Add some AmazingFeature'`).
+4. Pousser vers la branche (`git push origin feature/AmazingFeature`).
+5. Créer une Pull Request.
+
+---
+
+## 📄 Licence
 
 Ce projet est sous licence MIT.  
 Voir le fichier [LICENSE](LICENSE) pour plus de détails.
 
-## Auteur
+---
+
+## 🙌 Auteur
 
 Projet développé par [Marc Delage](https://github.com/nantaidsl95).
