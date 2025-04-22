@@ -1,4 +1,4 @@
-whisper
+git+https://github.com/openai/whisper.git
 tqdm
 pyannote.audio
 torch
