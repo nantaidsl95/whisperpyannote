@@ -28,20 +28,38 @@ git clone https://github.com/nantaidsl95/whisperpyannote.git
 cd whisperpyannote
 ```
 
-Install dependencies:
+---
+
+## 🧪 Create a Virtual Environment (Recommended)
+
+To avoid system conflicts, it is **recommended to use a virtual environment**.
+
+Create and activate a `venv`:
+
+```bash
+python3 -m venv venv
+source venv/bin/activate
+```
+
+(Windows users:
+```bash
+venv\Scripts\activate
+```
+)
+
+✅ Now you are inside an isolated Python environment!
+
+---
+
+## 📦 Install dependencies
+
+After activating your virtual environment, install the required packages:
+
 ```bash
 pip install -r requirements.txt
 ```
 
-Install the project:
-```bash
-pip install .
-```
-
-⚠️ Requirements:
-- Python 3.8 or higher
-- `ffmpeg` installed on your system
-- A valid Hugging Face account for diarization (see below)
+⚡ Using a virtual environment solves issues like "externally-managed-environment" errors on macOS and Linux.
 
 ---
 
