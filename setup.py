@@ -3,9 +3,9 @@ from setuptools import setup, find_packages
 setup(
     name="whisperpyannote",
     version="0.1.0",
-    description="Script de transcription et de diarisation audio/vidéo avec Whisper et Pyannote.",
+    description="Script Python pour la transcription et la diarisation automatique d'audio/vidéo avec Whisper et Pyannote.",
     author="Marc Delage",
-    author_email="ton@email.com",
+    author_email="marc.delage@imt.fr",  
     url="https://github.com/nantaidsl95/whisperpyannote",
     packages=find_packages(),
     install_requires=[
@@ -25,6 +25,8 @@ setup(
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
+        "Topic :: Multimedia :: Sound/Audio :: Speech",
+        "Intended Audience :: Developers",
     ],
-    python_requires='>=3.8',
+    python_requires=">=3.8",
 )
