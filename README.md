@@ -3,100 +3,100 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE) 
 [![Python](https://img.shields.io/badge/Python-3.8%2B-blue.svg)](https://www.python.org/downloads/)
 
-Script Python pour transcrire et diariser automatiquement des fichiers audio ou vidéo, en utilisant [OpenAI Whisper](https://github.com/openai/whisper) et [pyannote-audio](https://github.com/pyannote/pyannote-audio).
+Python script for automatic audio/video transcription and speaker diarization, using [OpenAI Whisper](https://github.com/openai/whisper) and [pyannote-audio](https://github.com/pyannote/pyannote-audio).
 
 ---
 
-## ✨ Fonctionnalités
+## ✨ Features
 
-- Extraction automatique de l'audio depuis une vidéo.
-- Conversion au format 16kHz mono pour Whisper et Pyannote.
-- Transcription de haute qualité avec OpenAI Whisper.
-- Diarisation des locuteurs avec Pyannote 3.0.
-- Résumé du temps de parole par speaker.
-- Différents styles de sortie (`simple`, `markdown`, `per_speaker`).
-- Fichier texte, prêt à être ouvert dans Word, Docs ou Excel.
-- Barre de progression (`tqdm`) pour visualiser l'avancement.
+- Automatic audio extraction from video files.
+- Conversion to 16kHz mono audio for Whisper and Pyannote compatibility.
+- High-quality transcription using OpenAI Whisper.
+- Speaker diarization using Pyannote 3.0.
+- Speaker talk time summary.
+- Multiple output styles (`simple`, `markdown`, `per_speaker`).
+- Text files ready for Word, Docs, or Excel.
+- Progress bar (`tqdm`) for real-time feedback.
 
 ---
 
 ## 🚀 Installation
 
-Cloner ce dépôt :
+Clone this repository:
 ```bash
 git clone https://github.com/nantaidsl95/whisperpyannote.git
 cd whisperpyannote
 ```
 
-Installer les dépendances :
+Install dependencies:
 ```bash
 pip install -r requirements.txt
 ```
 
-Installer le projet :
+Install the project:
 ```bash
 pip install .
 ```
 
-⚠️ Prérequis :
-- Python 3.8 ou supérieur
-- `ffmpeg` installé sur votre système
-- Un compte Hugging Face valide pour la diarisation (voir ci-dessous)
+⚠️ Requirements:
+- Python 3.8 or higher
+- `ffmpeg` installed on your system
+- A valid Hugging Face account for diarization (see below)
 
 ---
 
-## 🔑 Autoriser l'accès Hugging Face
+## 🔑 Grant Access to Hugging Face Model
 
-Le script utilise le modèle `pyannote/speaker-diarization-3.0` hébergé sur Hugging Face, qui nécessite un accès spécifique.
+The script uses the `pyannote/speaker-diarization-3.0` model hosted on Hugging Face, which requires explicit access authorization.
 
-**Avant la première utilisation, vous devez impérativement :**
+**Before running the script, you must:**
 
-1. Aller sur la page du modèle : [https://huggingface.co/pyannote/speaker-diarization-3.0](https://huggingface.co/pyannote/speaker-diarization-3.0)
-2. Cliquer sur **"Agree and access"** pour accepter les conditions d'utilisation du modèle.
-3. Créer un token d'accès personnel ici : [https://huggingface.co/settings/tokens](https://huggingface.co/settings/tokens)
-4. Exporter ce token dans votre terminal :
+1. Visit the model page: [https://huggingface.co/pyannote/speaker-diarization-3.0](https://huggingface.co/pyannote/speaker-diarization-3.0)
+2. Click on **"Agree and access"** to accept the model's usage conditions.
+3. Create a personal access token: [https://huggingface.co/settings/tokens](https://huggingface.co/settings/tokens)
+4. Export your token as an environment variable in your terminal:
 
 ```bash
-export HUGGINGFACE_TOKEN="votre_token_ici"
+export HUGGINGFACE_TOKEN="your_token_here"
 ```
 
-✅ Ensuite, vous pourrez exécuter normalement le script pour la diarisation.
+✅ After these steps, you will be able to use the diarization functionality without errors.
 
-⚠️ **Important** : sans avoir accepté l'accès au modèle **ET** défini votre token, le script échouera avec une erreur `403 Unauthorized`.
+⚠️ **Important**: if you do not agree to the model's conditions and configure your token, you will encounter a `403 Unauthorized` error.
 
 ---
 
-## 🛠️ Utilisation
+## 🛠️ Usage
 
-Commande de base :
+Basic command:
 ```bash
 whisperpyannote input_audio_or_video.mp4 output.txt
 ```
 
-Options disponibles :
-- `--whisper_model` : modèle Whisper à utiliser (`tiny`, `base`, `small`, `medium`, `large`, `turbo`) — par défaut `turbo`
-- `--language` : forcer la langue (`fr`, `en`, `es`, etc.) — optionnel
-- `--output_style` : choisir le style de sortie (`simple`, `markdown`, `per_speaker`) — par défaut `markdown`
-- `--keep_temp` : conserver les fichiers temporaires générés
+Available options:
+- `--whisper_model`: choose Whisper model (`tiny`, `base`, `small`, `medium`, `large`, `turbo`) — default is `turbo`
+- `--language`: force language detection (`fr`, `en`, `es`, etc.) — optional
+- `--output_style`: select the output style (`simple`, `markdown`, `per_speaker`) — default is `markdown`
+- `--keep_temp`: keep temporary audio files
 
-Exemple complet :
+Full example:
 ```bash
 whisperpyannote interview.mp4 transcription.txt --whisper_model medium --language fr --output_style per_speaker
 ```
 
 ---
 
-## 🖋️ Styles de sortie disponibles (`--output_style`)
+## 🖋️ Available Output Styles (`--output_style`)
 
-| Style | Description | Utilisation |
+| Style | Description | Use case |
 |:--|:--|:--|
-| `simple` | Texte brut par segment avec horodatage | Lecture rapide |
-| `markdown` | Formaté avec titres par speaker et texte en gras | Idéal pour Word/Docs |
-| `per_speaker` | Tous les textes regroupés par speaker | Analyse par locuteur |
+| `simple` | Raw text per segment with timestamps | Quick reading |
+| `markdown` | Structured text with speaker titles and bold timestamps | Ideal for Word/Docs |
+| `per_speaker` | All text grouped by speaker | Speaker-based analysis |
 
 ---
 
-## 📂 Architecture du projet
+## 📂 Project Structure
 
 ```
 whisperpyannote/
@@ -113,42 +113,42 @@ whisperpyannote/
 │   ├── diarization.py
 │   └── output_formatter.py
 └── examples/
-    └── (fichiers audio/vidéo exemples)
+    └── (sample audio/video files)
 ```
 
 ---
 
-## 🧩 Technologies utilisées
+## 🧩 Technologies Used
 
-Ce projet utilise :
+This project leverages:
 
-- [OpenAI Whisper](https://github.com/openai/whisper) (licence MIT)
-- [pyannote-audio](https://github.com/pyannote/pyannote-audio) développé par l'Université de Lorraine (licence MIT)
+- [OpenAI Whisper](https://github.com/openai/whisper) (MIT License)
+- [pyannote-audio](https://github.com/pyannote/pyannote-audio) developed by Université de Lorraine (MIT License)
 
-Merci aux équipes respectives pour leurs travaux exceptionnels !
-
----
-
-## 🤝 Contribuer
-
-Les contributions sont les bienvenues !
-
-Merci de suivre ces étapes :
-1. Forker ce dépôt.
-2. Créer une branche (`git checkout -b feature/AmazingFeature`).
-3. Commiter vos modifications (`git commit -m 'Add some AmazingFeature'`).
-4. Pousser vers la branche (`git push origin feature/AmazingFeature`).
-5. Créer une Pull Request.
+Thanks to the respective teams for their outstanding work!
 
 ---
 
-## 📄 Licence
+## 🤝 Contributing
 
-Ce projet est sous licence MIT.  
-Voir le fichier [LICENSE](LICENSE) pour plus de détails.
+Contributions are welcome!
+
+Please follow these steps:
+1. Fork this repository.
+2. Create a branch (`git checkout -b feature/AmazingFeature`).
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`).
+4. Push to the branch (`git push origin feature/AmazingFeature`).
+5. Open a Pull Request.
 
 ---
 
-## 🙌 Auteur
+## 📄 License
 
-Projet développé par [Marc Delage](https://github.com/nantaidsl95).
+This project is licensed under the MIT License.  
+See the [LICENSE](LICENSE) file for more details.
+
+---
+
+## 🙌 Author
+
+Project developed by [Marc Delage](https://github.com/nantaidsl95).
