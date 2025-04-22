@@ -14,7 +14,8 @@ Script Python pour transcrire et diariser automatiquement des fichiers audio ou 
 - Transcription de haute qualité avec OpenAI Whisper.
 - Diarisation des locuteurs avec Pyannote 3.0.
 - Résumé du temps de parole par speaker.
-- Fichier texte de sortie lisible et horodaté.
+- Différents styles de sortie (`simple`, `markdown`, `per_speaker`).
+- Fichier texte, prêt à être ouvert dans Word, Docs ou Excel.
 - Barre de progression (`tqdm`) pour visualiser l'avancement.
 
 ---
@@ -32,10 +33,15 @@ Installer les dépendances :
 pip install -r requirements.txt
 ```
 
-Prérequis :
+Installer le projet :
+```bash
+pip install .
+```
+
+⚠️ Prérequis :
 - Python 3.8 ou supérieur
 - `ffmpeg` installé sur votre système
-- Un compte Hugging Face valide (pour pyannote)
+- Un compte Hugging Face valide pour la diarisation (voir ci-dessous)
 
 ---
 
@@ -43,17 +49,20 @@ Prérequis :
 
 Le script utilise le modèle `pyannote/speaker-diarization-3.0` hébergé sur Hugging Face, qui nécessite un accès spécifique.
 
-Avant la première utilisation :
+**Avant la première utilisation, vous devez impérativement :**
 
-1. Allez sur [https://huggingface.co/pyannote/speaker-diarization-3.0](https://huggingface.co/pyannote/speaker-diarization-3.0) et cliquez sur **"Agree and access"** pour accepter les conditions d'utilisation.
-2. Créez un token Hugging Face personnel ici : [https://huggingface.co/settings/tokens](https://huggingface.co/settings/tokens)
-3. Dans votre terminal, exportez votre token :
+1. Aller sur la page du modèle : [https://huggingface.co/pyannote/speaker-diarization-3.0](https://huggingface.co/pyannote/speaker-diarization-3.0)
+2. Cliquer sur **"Agree and access"** pour accepter les conditions d'utilisation du modèle.
+3. Créer un token d'accès personnel ici : [https://huggingface.co/settings/tokens](https://huggingface.co/settings/tokens)
+4. Exporter ce token dans votre terminal :
 
 ```bash
 export HUGGINGFACE_TOKEN="votre_token_ici"
 ```
 
-Vous êtes maintenant prêt à utiliser le script.
+✅ Ensuite, vous pourrez exécuter normalement le script pour la diarisation.
+
+⚠️ **Important** : sans avoir accepté l'accès au modèle **ET** défini votre token, le script échouera avec une erreur `403 Unauthorized`.
 
 ---
 
@@ -61,17 +70,29 @@ Vous êtes maintenant prêt à utiliser le script.
 
 Commande de base :
 ```bash
-python transcribe_and_diarize.py input_audio_or_video.mp4 output.txt
+whisperpyannote input_audio_or_video.mp4 output.txt
 ```
 
 Options disponibles :
-- `--whisper_model` : choisir le modèle Whisper (`tiny`, `base`, `small`, `medium`, `large`, `turbo`) — par défaut `turbo`
+- `--whisper_model` : modèle Whisper à utiliser (`tiny`, `base`, `small`, `medium`, `large`, `turbo`) — par défaut `turbo`
+- `--language` : forcer la langue (`fr`, `en`, `es`, etc.) — optionnel
+- `--output_style` : choisir le style de sortie (`simple`, `markdown`, `per_speaker`) — par défaut `markdown`
 - `--keep_temp` : conserver les fichiers temporaires générés
 
 Exemple complet :
 ```bash
-python transcribe_and_diarize.py interview.mp4 transcription.txt --whisper_model medium --keep_temp
+whisperpyannote interview.mp4 transcription.txt --whisper_model medium --language fr --output_style per_speaker
 ```
+
+---
+
+## 🖋️ Styles de sortie disponibles (`--output_style`)
+
+| Style | Description | Utilisation |
+|:--|:--|:--|
+| `simple` | Texte brut par segment avec horodatage | Lecture rapide |
+| `markdown` | Formaté avec titres par speaker et texte en gras | Idéal pour Word/Docs |
+| `per_speaker` | Tous les textes regroupés par speaker | Analyse par locuteur |
 
 ---
 
@@ -82,7 +103,6 @@ whisperpyannote/
 ├── README.md
 ├── LICENSE
 ├── requirements.txt
-├── .gitignore
 ├── setup.py
 ├── transcribe_and_diarize.py
 ├── whisperpyannote/
@@ -90,7 +110,8 @@ whisperpyannote/
 │   ├── main.py
 │   ├── utils.py
 │   ├── transcription.py
-│   └── diarization.py
+│   ├── diarization.py
+│   └── output_formatter.py
 └── examples/
     └── (fichiers audio/vidéo exemples)
 ```
