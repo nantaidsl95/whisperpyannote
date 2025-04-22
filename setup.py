@@ -3,9 +3,9 @@ from setuptools import setup, find_packages
 setup(
     name="whisperpyannote",
     version="0.1.0",
-    description="Script Python pour la transcription et la diarisation automatique d'audio/vidéo avec Whisper et Pyannote.",
+    description="Python script for automatic audio/video transcription and speaker diarization with Whisper and Pyannote.",
     author="Marc Delage",
-    author_email="marc.delage@imt.fr",  
+    author_email="your.email@example.com",  # <-- Update with your real email
     url="https://github.com/nantaidsl95/whisperpyannote",
     packages=find_packages(),
     install_requires=[
