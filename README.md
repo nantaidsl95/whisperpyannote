@@ -1,6 +1,6 @@
 # Transcription & Diarisation Audio/Vidéo
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)  
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)  
 [![Python](https://img.shields.io/badge/Python-3.8%2B-blue.svg)](https://www.python.org/downloads/)
 
 Python script for automatic audio/video **transcription** and **speaker diarization**, using [OpenAI Whisper](https://github.com/openai/whisper) and [pyannote-audio](https://github.com/pyannote/pyannote-audio).
@@ -180,7 +180,7 @@ Contributions are welcome!
 ## 📄 License
 
 This project is licensed under the MIT License.  
-See the [LICENSE](LICENSE) file for more details.  
+See the [LICENSE](./LICENSE) file for more details.  
 
 ---
 
