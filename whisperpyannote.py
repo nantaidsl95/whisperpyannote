@@ -1,10 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
-Script de transcription et diarisation audio/vidéo
-Version améliorée avec argparse et tqdm (progress bar)
-@author: marcdelage
-"""
+
 
 import os
 import sys
@@ -127,6 +123,7 @@ print(f"✅ {len(speaker_segments)} segments de speakers détectés.")
 
 # --- Association transcription <-> speaker avec barre de progression ---
 formatted_output = []
+assigned_speakers = []  # AJOUT : liste pour stocker le speaker de chaque segment
 OVERLAP_THRESHOLD = 0.01  # 🔽 seuil réduit pour inclure plus de correspondances
 
 print("\n🔗 Association des segments transcription <-> speakers...")
@@ -145,6 +142,7 @@ for t_segment in tqdm(transcript_segments, desc="Matching segments"):
     text = t_segment['text']
 
     formatted_output.append(f"[{start_time} - {end_time}] 🗣️ Speaker {best_speaker}: {text}")
+    assigned_speakers.append(best_speaker)  # AJOUT : on garde le speaker associé
 
 
 # --- Résumé temps de parole ---
@@ -168,13 +166,62 @@ for line in formatted_output[:10]:
 print("... (voir fichier pour le reste)")
 
 # --- Sauvegarde dans le fichier ---
+# Helpers locaux (uniquement pour le rendu fichier)
+import re
+
+def _smart_join(a: str, b: str) -> str:
+    if not a:
+        return (b or "").strip()
+    if not b:
+        return a.strip()
+    sep = "" if a.endswith(("—", "-", "…", ":", "(", "[", "{", "/")) else " "
+    j = (a.rstrip() + sep + b.lstrip())
+    j = re.sub(r"\s+([,.?!;:])", r"\1", j)
+    j = re.sub(r"\s{2,}", " ", j)
+    return j.strip()
+
+def merge_by_runs(segments):
+    if not segments:
+        return []
+    segments = sorted(segments, key=lambda s: (s["start"], s["end"]))
+    merged = []
+    cur = dict(segments[0])
+    for seg in segments[1:]:
+        if seg["speaker"] == cur["speaker"]:
+            cur["end"] = max(cur["end"], float(seg["end"]))
+            cur["text"] = _smart_join(cur.get("text",""), seg.get("text",""))
+        else:
+            if cur.get("text","").strip():
+                merged.append(cur)
+            cur = dict(seg)
+    if cur.get("text","").strip():
+        merged.append(cur)
+    return merged
+
+def hhmmss(t):
+    return str(datetime.timedelta(seconds=int(max(0, t))))
+
+# 1) Construire la liste structurée à partir des segments Whisper + attribution speaker
+segments = []
+for t, spk in zip(transcript_segments, assigned_speakers):
+    segments.append({
+        "start": float(t["start"]),
+        "end": float(t["end"]),
+        "speaker": spk,
+        "text": t.get("text", "")
+    })
+
+# 2) Fusion stricte par speaker (jusqu’au changement d’intervenant)
+segments_merged = merge_by_runs(segments)
+
+# 3) Écrire UNIQUEMENT la version fusionnée dans le fichier (les consoles restent inchangées)
 with open(output_file, "w", encoding="utf-8") as f:
     f.write("⏳ Temps de parole par speaker :\n")
     for speaker, duration in speaker_durations_formatted.items():
         f.write(f"🗣️ Speaker {speaker}: {duration}\n")
-    f.write("\n")
-    for line in formatted_output:
-        f.write(line + "\n")
+    f.write("\n📜 Transcription fusionnée par speaker :\n\n")
+    for s in segments_merged:
+        f.write(f"[{hhmmss(s['start'])}–{hhmmss(s['end'])}] {s['speaker']}: {s['text'].strip()}\n")
 
 print(f"\n✅ Transcription complète sauvegardée dans : {output_file}")
 
