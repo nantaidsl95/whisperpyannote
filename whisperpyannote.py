@@ -1,6 +1,10 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-
+"""
+Script de transcription et diarisation audio/vidéo
+Version améliorée avec argparse et tqdm (progress bar)
+@author: marcdelage
+"""
 
 import os
 import sys
@@ -106,7 +110,7 @@ if not HF_TOKEN:
 print("\n🗣️ Diarisation avec Pyannote en cours...")
 pipeline = Pipeline.from_pretrained(
     "pyannote/speaker-diarization-3.0",
-    token=HF_TOKEN
+    use_auth_token=HF_TOKEN
 )
 diarization = pipeline(input_path)
 
