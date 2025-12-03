@@ -106,7 +106,7 @@ if not HF_TOKEN:
 print("\n🗣️ Diarisation avec Pyannote en cours...")
 pipeline = Pipeline.from_pretrained(
     "pyannote/speaker-diarization-3.0",
-    use_auth_token=HF_TOKEN
+    token=HF_TOKEN
 )
 diarization = pipeline(input_path)
 
