@@ -1,58 +1,83 @@
 # 🎧 whisperpyannote — Audio & Video Transcription + Speaker Diarization
 
+![License](https://img.shields.io/badge/License-MIT-green)
+![Python](https://img.shields.io/badge/Python-3.10%2B-blue)
+![Whisper](https://img.shields.io/badge/Whisper-STT-orange)
+![Pyannote](https://img.shields.io/badge/Pyannote-Diarization-purple)
+![Status](https://img.shields.io/badge/Status-Active-success)
+![PRs](https://img.shields.io/badge/PRs-Welcome-brightgreen)
+
 **whisperpyannote** is a Python script that performs:
 
-- 📝 automatic speech transcription
-- 🗣️ speaker diarization (who speaks when)
-- 🎥 on both audio and video files
+- 📝 automatic speech transcription  
+- 🗣️ speaker diarization (who speaks when)  
+- 🎥 on both audio and video files  
 
-It combines the power of **Whisper (OpenAI)** for transcription and **Pyannote** for speaker identification.
+It combines **Whisper (OpenAI)** for transcription and **Pyannote Audio** for speaker identification.
+
+🔗 Whisper → https://github.com/openai/whisper  
+🔗 Pyannote community diarization model → https://huggingface.co/pyannote/speaker-diarization-community-1  
 
 ---
 
 ## 🙏 Acknowledgements
 
-This project relies on two major open‑source technologies:
+This project uses two major open-source components:
 
-- **Whisper (OpenAI)** — automatic speech transcription  
-- **Pyannote Audio** and the community model **speaker-diarization-community-1** — speaker diarization  
+- **Whisper (OpenAI)** — MIT License  
+- **Pyannote Audio** and the model **speaker-diarization-community-1** — MIT License  
 
-Thanks to the developers, maintainers, and the Pyannote community for providing high‑quality open models accessible to everyone.
+Thanks to their authors, maintainers, and contributors for making high-quality open models available to everyone.
 
 ---
 
 ## ✨ Features
 
-- 🎥 Automatic audio extraction from videos (FFmpeg)
-- 🔄 Auto‑conversion to **mono 16 kHz**
-- 📝 High‑quality Whisper transcription
-- 🗣️ Accurate Pyannote speaker diarization
-- 🧠 Smart merging of consecutive segments per speaker
-- ⏳ Automatic speaking‑time calculation
-- 📜 Clean TXT export with timestamps + speakers
-- 📈 Progress bars (tqdm)
-- 🔧 Modes: transcription only, diarization only, or both
+- 🎥 Automatic audio extraction from videos  
+- 🔄 Conversion to mono 16 kHz  
+- 📝 Whisper transcription  
+- 🗣️ Pyannote diarization  
+- 🧠 Smart merging of segments  
+- ⏳ Speaking time per speaker  
+- 📜 Clean final transcript  
+- 📈 Progress bars with tqdm  
+
+---
+
+# 🎙️ Recording with OBS (recommended)
+
+Steps:
+
+1. Install OBS: https://obsproject.com/  
+2. Add **Display Capture** or **Window Capture**  
+3. Add **Audio Input Capture** (microphone)  
+4. Optional: capture system audio  
+   - macOS → install **BlackHole** (https://existential.audio/blackhole/)  
+   - Windows → enable **Stereo Mix** or use **VB-Cable**  
+5. Record in MP4 or MKV  
+6. Use the recorded file with `whisperpyannote`
+
+OBS recordings (.mp4, .mov, .mkv) work perfectly.
 
 ---
 
 ## 🚀 Installation
 
-### 1. Clone the repository
+### 1️⃣ Clone the repository
 ```bash
 git clone https://github.com/nantaidsl95/whisperpyannote.git
 cd whisperpyannote
 ```
 
-### 2. Install FFmpeg  
-Required for audio extraction and conversion.
+### 2️⃣ Install FFmpeg  
 
-### 3. Create a virtual environment (optional)
+### 3️⃣ Create a virtual environment
 ```bash
 python3 -m venv venv
 source venv/bin/activate
 ```
 
-### 4. Install dependencies
+### 4️⃣ Install Python dependencies
 ```bash
 pip install -r requirements.txt
 ```
@@ -61,93 +86,73 @@ pip install -r requirements.txt
 
 ## 🔑 Hugging Face Token (required for Pyannote)
 
-1. Open the model page: https://huggingface.co/pyannote/speaker-diarization-community-1  
-2. Request access  
-3. Create your HF token: https://huggingface.co/settings/tokens  
-4. Export it:
+1. Request access: https://huggingface.co/pyannote/speaker-diarization-community-1  
+2. Create a token: https://huggingface.co/settings/tokens  
+3. Export it:
 
 ```bash
 export HUGGINGFACE_TOKEN="your_token"
 ```
 
-Without this token, diarization will fail with **403 Unauthorized**.
-
 ---
 
 # 🛠️ Full CLI Options
 
-## Required arguments
+### Required arguments
 
 | Argument | Description |
 |---------|-------------|
 | `input_path` | Audio/video file to process |
-| `output_file` | Output TXT file |
+| `output_file` | Output text file |
 
 ---
 
-## Transcription & Diarization options
+### Transcription & diarization options
 
 | Option | Description | Values |
 |--------|-------------|--------|
 | `--whisper_model` | Whisper model | tiny, base, small, medium, large, turbo |
-| `--language` | Force Whisper language | e.g., en, fr, de |
+| `--language` | Force transcription language | en, fr, de… |
 
 ---
 
-## Mutually exclusive modes
+### Exclusive modes
 
 | Option | Description |
 |--------|-------------|
-| `--transcription_only` | Only run Whisper transcription |
-| `--diarization_only` | Only run Pyannote diarization |
+| `--transcription_only` | Only transcription |
+| `--diarization_only` | Only diarization |
 
 ---
 
-## Hugging Face token management
+### Token management
 
 | Option | Description |
 |--------|-------------|
-| `--hf_token` | Provide token directly |
+| `--hf_token` | Provide HF token directly |
 | `--ask_token` | Force interactive prompt |
 
-Environment variables also supported:
+Also detected automatically:
 - `HF_TOKEN`
 - `HUGGINGFACE_TOKEN`
 
 ---
 
-## Temporary file handling
+### Temporary files
 
 | Option | Description |
 |--------|-------------|
-| `--keep_temp` | Keep extracted/converted WAV files |
+| `--keep_temp` | Keep temporary WAV files |
 
 ---
 
 # 🚀 Usage Examples
 
-## Full transcription + diarization
 ```bash
 python whisperpyannote.py input.mp4 output.txt
-```
-
-## Transcription only
-```bash
 python whisperpyannote.py audio.wav output.txt --transcription_only
-```
-
-## Diarization only
-```bash
-python whisperpyannote.py audio.wav output.txt --diarization_only
-```
-
-## Force model
-```bash
 python whisperpyannote.py audio.wav output.txt --whisper_model medium
-```
-
-## Provide token
-```bash
+python whisperpyannote.py audio.wav output.txt --language fr
 python whisperpyannote.py audio.wav output.txt --hf_token "hf_xxx"
 ```
 
@@ -162,7 +167,6 @@ SPEAKER_01: 00:08:45
 
 [00:00:01–00:00:05] SPEAKER_00: Hello everyone!
 [00:00:06–00:00:10] SPEAKER_01: Hi, how are you?
-...
 ```
 
 ---
@@ -182,201 +186,8 @@ whisperpyannote/
 
 ## 📄 License
 
-# 🎧 whisperpyannote — Audio & Video Transcription + Speaker Diarization
-
-**whisperpyannote** is a Python script that performs:
-
-- 📝 automatic speech transcription
-- 🗣️ speaker diarization (who speaks when)
-- 🎥 on both audio and video files
-
-It combines the power of **Whisper (OpenAI)** for transcription and **Pyannote** for speaker identification.
-
----
-
-## 🙏 Acknowledgements
-
-This project relies on two major open‑source technologies:
-
-- **Whisper (OpenAI)** — automatic speech transcription  
-- **Pyannote Audio** and the community model **speaker-diarization-community-1** — speaker diarization  
-
-Thanks to the developers, maintainers, and the Pyannote community for providing high‑quality open models accessible to everyone.
-
----
-
-## ✨ Features
-
-- 🎥 Automatic audio extraction from videos (FFmpeg)
-- 🔄 Auto‑conversion to **mono 16 kHz**
-- 📝 High‑quality Whisper transcription
-- 🗣️ Accurate Pyannote speaker diarization
-- 🧠 Smart merging of consecutive segments per speaker
-- ⏳ Automatic speaking‑time calculation
-- 📜 Clean TXT export with timestamps + speakers
-- 📈 Progress bars (tqdm)
-- 🔧 Modes: transcription only, diarization only, or both
-
----
-
-## 🚀 Installation
-
-### 1. Clone the repository
-```bash
-git clone https://github.com/nantaidsl95/whisperpyannote.git
-cd whisperpyannote
-```
-
-### 2. Install FFmpeg  
-Required for audio extraction and conversion.
-
-### 3. Create a virtual environment (optional)
-```bash
-python3 -m venv venv
-source venv/bin/activate
-```
-
-### 4. Install dependencies
-```bash
-pip install -r requirements.txt
-```
-
----
-
-## 🔑 Hugging Face Token (required for Pyannote)
-
-1. Open the model page: https://huggingface.co/pyannote/speaker-diarization-community-1  
-2. Request access  
-3. Create your HF token: https://huggingface.co/settings/tokens  
-4. Export it:
-
-```bash
-export HUGGINGFACE_TOKEN="your_token"
-```
-
-Without this token, diarization will fail with **403 Unauthorized**.
-
----
-
-# 🛠️ Full CLI Options
-
-## Required arguments
-
-| Argument | Description |
-|---------|-------------|
-| `input_path` | Audio/video file to process |
-| `output_file` | Output TXT file |
-
----
-
-## Transcription & Diarization options
-
-| Option | Description | Values |
-|--------|-------------|--------|
-| `--whisper_model` | Whisper model | tiny, base, small, medium, large, turbo |
-| `--language` | Force Whisper language | e.g., en, fr, de |
-
----
-
-## Mutually exclusive modes
-
-| Option | Description |
-|--------|-------------|
-| `--transcription_only` | Only run Whisper transcription |
-| `--diarization_only` | Only run Pyannote diarization |
-
----
-
-## Hugging Face token management
-
-| Option | Description |
-|--------|-------------|
-| `--hf_token` | Provide token directly |
-| `--ask_token` | Force interactive prompt |
-
-Environment variables also supported:
-- `HF_TOKEN`
-- `HUGGINGFACE_TOKEN`
-
----
-
-## Temporary file handling
-
-| Option | Description |
-|--------|-------------|
-| `--keep_temp` | Keep extracted/converted WAV files |
-
----
-
-# 🚀 Usage Examples
-
-## Full transcription + diarization
-```bash
-python whisperpyannote.py input.mp4 output.txt
-```
-
-## Transcription only
-```bash
-python whisperpyannote.py audio.wav output.txt --transcription_only
-```
-
-## Diarization only
-```bash
-python whisperpyannote.py audio.wav output.txt --diarization_only
-```
-
-## Force model
-```bash
-python whisperpyannote.py audio.wav output.txt --whisper_model medium
-```
-
-## Provide token
-```bash
-python whisperpyannote.py audio.wav output.txt --hf_token "hf_xxx"
-```
-
----
-
-## 📜 Example Output
-
-```
-⏳ Speaking time per speaker:
-SPEAKER_00: 00:12:34
-SPEAKER_01: 00:08:45
-
-[00:00:01–00:00:05] SPEAKER_00: Hello everyone!
-[00:00:06–00:00:10] SPEAKER_01: Hi, how are you?
-...
-```
-
----
-
-## 📁 Project Structure
-
-```
-whisperpyannote/
-├── whisperpyannote.py
-├── requirements.txt
-├── README.md
-├── LICENSE
-└── .gitignore
-```
-
----
-
-## 📄 License
-
-This project uses Whisper (MIT License) and pyannote.audio (MIT License).
-Their respective licenses are included in the LICENSE file.
-This project is distributed under the [MIT License](./LICENSE).
-
----
-
-## 👤 Author
-
-Developed by **Marc Delage**  
-GitHub → https://github.com/nantaidsl95
-
+This project is distributed under the MIT License.  
+See the [LICENSE](./LICENSE) file for details.
 
 ---
 
