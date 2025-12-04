@@ -1,193 +1,173 @@
-# 🎧 whisperpyannote — Transcription & Diarisation Audio/Vidéo
+# 🎧 whisperpyannote — Audio & Video Transcription + Speaker Diarization
 
-**whisperpyannote** est un script Python de **transcription automatique** et de **diarisation (séparation des voix)** à partir de fichiers **audio ou vidéo**, combinant la puissance de [OpenAI Whisper](https://github.com/openai/whisper) et [Pyannote Audio 3.0](https://github.com/pyannote/pyannote-audio).
+**whisperpyannote** is a Python script that performs:
 
-> Ce projet s’appuie sur [OpenAI Whisper](https://github.com/openai/whisper) pour la transcription et sur [Pyannote Audio](https://github.com/pyannote/pyannote-audio) pour la diarisation des locuteurs.  
-> Merci aux auteurs de ces deux projets open source pour leur travail.
+- 📝 automatic speech transcription
+- 🗣️ speaker diarization (who speaks when)
+- 🎥 on both audio and video files
 
----
-
-## ✨ Fonctionnalités
-
-- 🎥 Extraction automatique de l’audio depuis les vidéos (via **FFmpeg**)  
-- 🔄 Conversion en **mono 16 kHz** pour une compatibilité optimale  
-- 📝 Transcription haute qualité avec **Whisper (OpenAI)**  
-- 🗣️ Diarisation précise des locuteurs avec **Pyannote 3.0**  
-- ⏳ Résumé du temps de parole par speaker  
-- 📜 Fusion propre des segments par locuteur  
-- 📊 Statistiques globales (durée totale, nombre de speakers, moyenne)  
-- 📂 Export `.txt` avec horodatage + speakers  
-- 📈 Suivi en temps réel via `tqdm`
+It combines the power of **Whisper (OpenAI)** for transcription and **Pyannote** for speaker identification.
 
 ---
 
-## 🎙️ Outils recommandés pour la capture audio et vidéo
+## 🙏 Acknowledgements
 
-Pour enregistrer vos conversations, réunions ou appels avant transcription :
+This project relies on two major open‑source technologies:
 
-### 🟣 [OBS Studio](https://obsproject.com/)
-Logiciel gratuit et open source pour **capturer la vidéo et l’audio** de votre écran, webcam ou applications.  
-Il permet d’enregistrer des visioconférences, des interviews, des streams, etc.  
-Les fichiers générés (`.mp4`, `.mkv`, `.mov`) sont directement compatibles avec **whisperpyannote**.
+- **Whisper (OpenAI)** — automatic speech transcription  
+- **Pyannote Audio** and the community model **speaker-diarization-community-1** — speaker diarization  
 
-### ⚫ [BlackHole (macOS uniquement)](https://existential.audio/blackhole/)
-Pilote audio virtuel gratuit pour **capturer l’audio interne du système** (sons de l’ordinateur).  
-Idéal pour enregistrer le son d’une visioconférence, d’une vidéo YouTube ou d’une réunion Zoom.  
-Peut être sélectionné comme source audio dans OBS pour combiner le **micro** et le **son du système**.
+Thanks to the developers, maintainers, and the Pyannote community for providing high‑quality open models accessible to everyone.
 
-💡 *Avec OBS + BlackHole, vous pouvez enregistrer simultanément votre voix et le son du système, puis passer le fichier résultant à `whisperpyannote` pour transcription et diarisation.*
+---
+
+## ✨ Features
+
+- 🎥 Automatic audio extraction from videos (FFmpeg)
+- 🔄 Auto‑conversion to **mono 16 kHz**
+- 📝 High‑quality Whisper transcription
+- 🗣️ Accurate Pyannote speaker diarization
+- 🧠 Smart merging of consecutive segments per speaker
+- ⏳ Automatic speaking‑time calculation
+- 📜 Clean TXT export with timestamps + speakers
+- 📈 Progress bars (tqdm)
+- 🔧 Modes: transcription only, diarization only, or both
 
 ---
 
 ## 🚀 Installation
 
-### 1️⃣ Cloner le dépôt
+### 1. Clone the repository
 ```bash
 git clone https://github.com/nantaidsl95/whisperpyannote.git
 cd whisperpyannote
 ```
 
-### 2️⃣ Installer FFmpeg
+### 2. Install FFmpeg  
+Required for audio extraction and conversion.
 
-FFmpeg est indispensable pour extraire et convertir l’audio.
-
-**Linux (Ubuntu/Debian)**
-```bash
-sudo apt update && sudo apt install ffmpeg
-```
-
-**macOS (Homebrew)**
-```bash
-brew install ffmpeg
-```
-
-**Windows**
-1. Téléchargez une version sur [https://ffmpeg.org/download.html](https://ffmpeg.org/download.html)  
-2. Ajoutez le dossier `bin/` à votre variable d’environnement **PATH**  
-3. Vérifiez :
-   ```powershell
-   ffmpeg -version
-   ```
-
-✅ Vous devez pouvoir exécuter `ffmpeg` depuis le terminal avant de lancer le script.
-
----
-
-### 3️⃣ Créer un environnement virtuel (recommandé)
+### 3. Create a virtual environment (optional)
 ```bash
 python3 -m venv venv
 source venv/bin/activate
 ```
-*(Sous Windows)* :
-```powershell
-venv\Scripts\activate
-```
 
-### 4️⃣ Installer les dépendances
+### 4. Install dependencies
 ```bash
 pip install -r requirements.txt
 ```
 
-**Principaux packages :**
-- `whisper`  
-- `pyannote.audio`  
-- `tqdm`  
-- `ffmpeg-python`  
-- `torch`  
-- `numpy`
+---
+
+## 🔑 Hugging Face Token (required for Pyannote)
+
+1. Open the model page: https://huggingface.co/pyannote/speaker-diarization-community-1  
+2. Request access  
+3. Create your HF token: https://huggingface.co/settings/tokens  
+4. Export it:
+
+```bash
+export HUGGINGFACE_TOKEN="your_token"
+```
+
+Without this token, diarization will fail with **403 Unauthorized**.
 
 ---
 
-## 🔑 Accès Hugging Face (obligatoire pour Pyannote)
+# 🛠️ Full CLI Options
 
-Le modèle `pyannote/speaker-diarization-3.0` nécessite un **jeton d’accès personnel**.
+## Required arguments
 
-1. Connectez-vous sur [https://huggingface.co/](https://huggingface.co/)  
-2. Ouvrez la page du modèle :  
-   👉 [https://huggingface.co/pyannote/speaker-diarization-3.0](https://huggingface.co/pyannote/speaker-diarization-3.0)  
-3. Cliquez sur **“Access request”** et acceptez les conditions.  
-4. Créez un token ici : [https://huggingface.co/settings/tokens](https://huggingface.co/settings/tokens)  
-5. Exportez-le dans votre terminal :
-
-```bash
-export HUGGINGFACE_TOKEN="votre_token_ici"
-```
-Sous PowerShell :
-```powershell
-$env:HUGGINGFACE_TOKEN="votre_token_ici"
-```
-
-⚠️ Sans ce jeton, la partie **diarisation** échouera avec une erreur `403 Unauthorized`.
+| Argument | Description |
+|---------|-------------|
+| `input_path` | Audio/video file to process |
+| `output_file` | Output TXT file |
 
 ---
 
-## 🛠️ Utilisation
+## Transcription & Diarization options
 
-### Commande de base :
-```bash
-python whisperpyannote.py input_audio_or_video.mp4 output.txt
-```
-
-### Options disponibles :
-
-| Option | Description | Défaut |
-|:--|:--|:--|
-| `input_path` | Fichier audio ou vidéo à traiter | *obligatoire* |
-| `output_file` | Fichier texte de sortie | *obligatoire* |
-| `--whisper_model` | Modèle Whisper à utiliser : `tiny`, `base`, `small`, `medium`, `large`, `turbo` | `turbo` |
-| `--keep_temp` | Conserve les fichiers audio temporaires | *désactivé* |
+| Option | Description | Values |
+|--------|-------------|--------|
+| `--whisper_model` | Whisper model | tiny, base, small, medium, large, turbo |
+| `--language` | Force Whisper language | e.g., en, fr, de |
 
 ---
 
-### 💡 Exemples
+## Mutually exclusive modes
 
-#### 🎙️ Transcription d’un fichier audio
+| Option | Description |
+|--------|-------------|
+| `--transcription_only` | Only run Whisper transcription |
+| `--diarization_only` | Only run Pyannote diarization |
+
+---
+
+## Hugging Face token management
+
+| Option | Description |
+|--------|-------------|
+| `--hf_token` | Provide token directly |
+| `--ask_token` | Force interactive prompt |
+
+Environment variables also supported:
+- `HF_TOKEN`
+- `HUGGINGFACE_TOKEN`
+
+---
+
+## Temporary file handling
+
+| Option | Description |
+|--------|-------------|
+| `--keep_temp` | Keep extracted/converted WAV files |
+
+---
+
+# 🚀 Usage Examples
+
+## Full transcription + diarization
 ```bash
-python whisperpyannote.py podcast.wav transcription.txt
+python whisperpyannote.py input.mp4 output.txt
 ```
 
-#### 🎥 Transcription d’une vidéo avec conservation de l’audio temporaire
+## Transcription only
 ```bash
-python whisperpyannote.py interview.mp4 transcription.txt --keep_temp
+python whisperpyannote.py audio.wav output.txt --transcription_only
+```
+
+## Diarization only
+```bash
+python whisperpyannote.py audio.wav output.txt --diarization_only
+```
+
+## Force model
+```bash
+python whisperpyannote.py audio.wav output.txt --whisper_model medium
+```
+
+## Provide token
+```bash
+python whisperpyannote.py audio.wav output.txt --hf_token "hf_xxx"
 ```
 
 ---
 
-## 📜 Exemple de sortie
+## 📜 Example Output
 
 ```
-⏳ Temps de parole par speaker :
-🗣️ Speaker A: 00:12:34
-🗣️ Speaker B: 00:08:45
+⏳ Speaking time per speaker:
+SPEAKER_00: 00:12:34
+SPEAKER_01: 00:08:45
 
-[00:00:01 - 00:00:05] 🗣️ Speaker A: Bonjour à tous !
-[00:00:06 - 00:00:10] 🗣️ Speaker B: Salut, comment ça va ?
-[00:00:11 - 00:00:18] 🗣️ Speaker A: Très bien, merci. On commence ?
+[00:00:01–00:00:05] SPEAKER_00: Hello everyone!
+[00:00:06–00:00:10] SPEAKER_01: Hi, how are you?
 ...
 ```
 
-Et dans la console :
-```
-📊 Résumé global :
-- Durée totale analysée : 00:21:19
-- Nombre de speakers : 2
-- Durée moyenne par speaker : 00:10:39
-```
-
 ---
 
-## 🧰 Dépannage
-
-| Problème | Solution |
-|:--|:--|
-| `ffmpeg not found` | Installez FFmpeg et ajoutez-le au PATH |
-| `403 Unauthorized` (Pyannote) | Votre token n’a pas accès au modèle — demandez l’accès sur Hugging Face |
-| Transcription lente | Essayez un modèle plus petit : `--whisper_model small` |
-| Pas de GPU détecté | Whisper utilisera automatiquement le CPU |
-
----
-
-## 📁 Structure du projet
+## 📁 Project Structure
 
 ```
 whisperpyannote/
@@ -200,24 +180,13 @@ whisperpyannote/
 
 ---
 
-## 🧩 Technologies utilisées
+## 📄 License
 
-- [OpenAI Whisper](https://github.com/openai/whisper)
-- [Pyannote Audio 3.0](https://github.com/pyannote/pyannote-audio)
-- [FFmpeg](https://ffmpeg.org/)
-- [tqdm](https://github.com/tqdm/tqdm)
-- [OBS Studio](https://obsproject.com/)
-- [BlackHole (macOS)](https://existential.audio/blackhole/)
+MIT License
 
 ---
 
-## 📄 Licence
+## 👤 Author
 
-Projet sous licence **MIT** — voir [LICENSE](./LICENSE).
-
----
-
-## 👤 Auteur
-
-Projet développé par **Marc Delage**  
-GitHub → [nantaidsl95](https://github.com/nantaidsl95)
+Developed by **Marc Delage**  
+GitHub → https://github.com/nantaidsl95
