@@ -1,6 +1,6 @@
 whisper
 pyannote.audio
+torch
+torchaudio
 tqdm
 ffmpeg-python
-torch
-numpy
