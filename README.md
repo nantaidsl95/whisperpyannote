@@ -366,6 +366,8 @@ whisperpyannote/
 
 ## 📄 License
 
+This project uses Whisper (MIT License) and pyannote.audio (MIT License).
+Their respective licenses are included in the LICENSE file.
 This project is distributed under the [MIT License](./LICENSE).
 
 ---
