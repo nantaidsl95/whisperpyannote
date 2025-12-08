@@ -13,14 +13,10 @@ import wave
 import tempfile
 import argparse
 import re
-
 import whisper
 from tqdm import tqdm
 from pyannote.audio import Pipeline
 import torchaudio
-
-# AJOUT pour le problème torch / safe globals
-import torch
 from torch.serialization import add_safe_globals
 from pyannote.audio.core.task import Specifications, Problem, Resolution
 
