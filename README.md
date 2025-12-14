@@ -33,14 +33,40 @@ Thanks to their authors, maintainers, and contributors for making high-quality o
 
 ## ✨ Features
 
-- 🎥 Automatic audio extraction from videos  
-- 🔄 Conversion to mono 16 kHz  
+- 🎥 Automatic audio extraction from videos *(requires FFmpeg)*  
+- 🔄 Conversion to mono 16 kHz *(requires FFmpeg)*  
 - 📝 Whisper transcription  
 - 🗣️ Pyannote diarization  
 - 🧠 Smart merging of segments  
 - ⏳ Speaking time per speaker  
 - 📜 Clean final transcript  
 - 📈 Progress bars with tqdm  
+
+---
+
+## ⚙️ System Requirement
+
+**FFmpeg is required** and must be available in your system PATH.
+
+The script relies on FFmpeg to:
+- extract audio from video files
+- convert audio to mono 16 kHz WAV
+
+### Install FFmpeg
+
+- **macOS (Homebrew)**  
+  ```
+  brew install ffmpeg
+  ```
+
+- **Ubuntu / Debian**  
+  ```
+  sudo apt install ffmpeg
+  ```
+
+- **Windows**  
+  Download from https://ffmpeg.org/download.html  
+  and make sure `ffmpeg` is added to your PATH.
 
 ---
 
@@ -64,21 +90,21 @@ OBS recordings (.mp4, .mov, .mkv) work perfectly.
 ## 🚀 Installation
 
 ### 1️⃣ Clone the repository
-```bash
+```
 git clone https://github.com/nantaidsl95/whisperpyannote.git
 cd whisperpyannote
 ```
 
-### 2️⃣ Install FFmpeg  
+### 2️⃣ Install FFmpeg (required)
 
 ### 3️⃣ Create a virtual environment
-```bash
+```
 python3 -m venv venv
 source venv/bin/activate
 ```
 
 ### 4️⃣ Install Python dependencies
-```bash
+```
 pip install -r requirements.txt
 ```
 
@@ -90,7 +116,7 @@ pip install -r requirements.txt
 2. Create a token: https://huggingface.co/settings/tokens  
 3. Export it:
 
-```bash
+```
 export HUGGINGFACE_TOKEN="your_token"
 ```
 
@@ -148,7 +174,7 @@ Also detected automatically:
 
 # 🚀 Usage Examples
 
-```bash
+```
 python whisperpyannote.py input.mp4 output.txt
 python whisperpyannote.py audio.wav output.txt --transcription_only
 python whisperpyannote.py audio.wav output.txt --whisper_model medium
