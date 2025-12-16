@@ -49,7 +49,7 @@ python whisperpyannote_gui.py
 In addition to the CLI dependencies, the GUI requires **PySide6**:
 
 ```bash
-pip install PySide6
+pip install -r requirements-gui.txt
 ```
 
 All other requirements (Whisper, Pyannote, FFmpeg, etc.) are identical to the CLI version.
