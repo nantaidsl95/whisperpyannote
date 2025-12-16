@@ -76,7 +76,7 @@ The script relies on FFmpeg to:
   ```
   winget install Gyan.FFmpeg
   ```
-  Puis redémarrer le terminal et vérifier :
+  Then restart your terminal and verify:
   ```
   ffmpeg -version
   ```
