@@ -72,6 +72,14 @@ The script relies on FFmpeg to:
   Download from https://ffmpeg.org/download.html  
   and make sure `ffmpeg` is added to your PATH.
 
+- **Windows (via terminal – winget)**
+  ```
+  winget install Gyan.FFmpeg
+  ```
+  Puis redémarrer le terminal et vérifier :
+  ```
+  ffmpeg -version
+  ```
 ---
 
 # 🎙️ Recording with OBS (recommended)
