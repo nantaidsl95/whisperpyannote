@@ -13,6 +13,7 @@ import wave
 import tempfile
 import argparse
 import re
+import json
 import whisper
 from tqdm import tqdm
 from pyannote.audio import Pipeline
@@ -121,14 +122,12 @@ def merge_by_runs(segments):
     if not segments:
         return []
 
-    # Tri par temps
     segments = sorted(segments, key=lambda s: (s["start"], s["end"]))
     merged = []
     cur = dict(segments[0])
 
     for seg in segments[1:]:
         if seg["speaker"] == cur["speaker"]:
-            # Extension du segment courant
             cur["end"] = max(cur["end"], float(seg["end"]))
             cur["text"] = _smart_join(cur.get("text", ""), seg.get("text", ""))
         else:
@@ -158,32 +157,128 @@ def get_audio_duration_seconds(audio_path: str) -> float:
         return 0.0
 
 
+# =========================
+#   Sorties JSON / SRT / VTT
+# =========================
+
+def json_path_for_output(output_file: str) -> str:
+    if output_file.lower().endswith(".json"):
+        return output_file
+    return output_file + ".json"
+
+
+def write_json_if_requested(args, output_file: str, payload: dict):
+    if not getattr(args, "json", False):
+        return
+    out_json = json_path_for_output(output_file)
+    with open(out_json, "w", encoding="utf-8") as f:
+        json.dump(payload, f, ensure_ascii=False, indent=2)
+    print(f"\n✅ JSON sauvegardé dans : {out_json}")
+
+
+def replace_ext(path: str, new_ext: str) -> str:
+    root, _ = os.path.splitext(path)
+    if not new_ext.startswith("."):
+        new_ext = "." + new_ext
+    return root + new_ext
+
+
+def _clamp_time(t: float) -> float:
+    try:
+        return max(0.0, float(t))
+    except Exception:
+        return 0.0
+
+
+def format_srt_timestamp(seconds: float) -> str:
+    """HH:MM:SS,mmm"""
+    seconds = _clamp_time(seconds)
+    ms_total = int(round(seconds * 1000.0))
+    s_total = ms_total // 1000
+    ms = ms_total % 1000
+    hh = s_total // 3600
+    mm = (s_total % 3600) // 60
+    ss = s_total % 60
+    return f"{hh:02d}:{mm:02d}:{ss:02d},{ms:03d}"
+
+
+def format_vtt_timestamp(seconds: float) -> str:
+    """HH:MM:SS.mmm"""
+    seconds = _clamp_time(seconds)
+    ms_total = int(round(seconds * 1000.0))
+    s_total = ms_total // 1000
+    ms = ms_total % 1000
+    hh = s_total // 3600
+    mm = (s_total % 3600) // 60
+    ss = s_total % 60
+    return f"{hh:02d}:{mm:02d}:{ss:02d}.{ms:03d}"
+
+
+def write_srt(segments, out_path: str, include_speaker: bool = True):
+    """
+    segments: liste de dicts {"start","end","text", "speaker"?}
+    """
+    with open(out_path, "w", encoding="utf-8") as f:
+        idx = 1
+        for seg in segments:
+            text = (seg.get("text", "") or "").strip()
+            if not text:
+                continue
+            start = format_srt_timestamp(seg.get("start", 0.0))
+            end = format_srt_timestamp(seg.get("end", 0.0))
+            if include_speaker and seg.get("speaker") not in (None, "", "inconnu"):
+                text = f"{seg['speaker']}: {text}"
+            f.write(f"{idx}\n")
+            f.write(f"{start} --> {end}\n")
+            f.write(f"{text}\n\n")
+            idx += 1
+    print(f"\n✅ SRT sauvegardé dans : {out_path}")
+
+
+def write_vtt(segments, out_path: str, include_speaker: bool = True):
+    with open(out_path, "w", encoding="utf-8") as f:
+        f.write("WEBVTT\n\n")
+        for seg in segments:
+            text = (seg.get("text", "") or "").strip()
+            if not text:
+                continue
+            start = format_vtt_timestamp(seg.get("start", 0.0))
+            end = format_vtt_timestamp(seg.get("end", 0.0))
+            if include_speaker and seg.get("speaker") not in (None, "", "inconnu"):
+                text = f"{seg['speaker']}: {text}"
+            f.write(f"{start} --> {end}\n")
+            f.write(f"{text}\n\n")
+    print(f"\n✅ VTT sauvegardé dans : {out_path}")
+
+
+def write_subtitles_if_requested(args, output_file: str, segments, include_speaker: bool = True):
+    """
+    Génère .srt et/ou .vtt si demandé via CLI.
+    """
+    if getattr(args, "srt", False):
+        out_srt = replace_ext(output_file, ".srt")
+        write_srt(segments, out_srt, include_speaker=include_speaker)
+    if getattr(args, "vtt", False):
+        out_vtt = replace_ext(output_file, ".vtt")
+        write_vtt(segments, out_vtt, include_speaker=include_speaker)
+
+
 # =============================
 #   Gestion du token HF
 # =============================
 
 def get_hf_token(args) -> str:
-    """
-    Récupère le token Hugging Face via :
-      1) variable d'environnement HF_TOKEN ou HUGGINGFACE_TOKEN
-      2) paramètre CLI --hf_token
-      3) saisie interactive (si terminal) si rien n'a été trouvé
-    """
-    # 1) Variables d'environnement
     env_token = os.environ.get("HF_TOKEN") or os.environ.get("HUGGINGFACE_TOKEN")
     if env_token:
         return env_token.strip()
 
-    # 2) Paramètre CLI
     if args.hf_token:
         return args.hf_token.strip()
 
-    # 3) Optionnellement, l'utilisateur peut forcer la demande via --ask_token
     if args.ask_token and not sys.stdin.isatty():
         print("❌ --ask_token demandé mais impossible de lire depuis stdin (mode non interactif).")
         sys.exit(1)
 
-    # 4) Si on est dans un terminal interactif, on propose toujours la saisie
     if sys.stdin.isatty():
         try:
             token = input("🔑 Aucun token Hugging Face détecté. Entrez votre token : ").strip()
@@ -194,7 +289,6 @@ def get_hf_token(args) -> str:
         print("❌ Aucun token saisi.")
         sys.exit(1)
 
-    # 5) Mode non interactif sans token
     print("🔎 Aucun token Hugging Face disponible (ni variable d'environnement, ni CLI, ni saisie interactive possible).")
     print("   Veuillez définir HF_TOKEN ou HUGGINGFACE_TOKEN, ou utiliser --hf_token.")
     sys.exit(1)
@@ -205,14 +299,12 @@ def get_hf_token(args) -> str:
 # =============================
 
 def load_whisper_model(whisper_model_choice: str):
-    """Charge le modèle Whisper demandé."""
     print(f"\n🎙️ Chargement du modèle Whisper '{whisper_model_choice}'...")
     model = whisper.load_model(whisper_model_choice)
     return model
 
 
 def run_whisper_transcription(model, audio_path: str, language: str = None):
-    """Lance la transcription Whisper sur le fichier audio donné."""
     print("📝 Transcription en cours... (cela peut prendre un moment)")
     transcribe_kwargs = {}
     if language:
@@ -228,7 +320,6 @@ def run_whisper_transcription(model, audio_path: str, language: str = None):
 # =============================
 
 def prepare_safe_globals():
-    """Ajoute Specifications/Problem/Resolution aux safe_globals si possible."""
     try:
         add_safe_globals([Specifications, Problem, Resolution])
     except Exception as e:
@@ -236,10 +327,6 @@ def prepare_safe_globals():
 
 
 def run_diarization(audio_path: str, hf_token: str):
-    """
-    Lance la diarisation Pyannote sur l'audio donné.
-    Retourne : speaker_segments (liste), waveform, sample_rate
-    """
     print("\n🗣️ Diarisation avec Pyannote en cours...")
 
     prepare_safe_globals()
@@ -265,7 +352,6 @@ def run_diarization(audio_path: str, hf_token: str):
 
     speaker_segments = []
 
-    # Compatible Annotation directe OU attribut .speaker_diarization
     annotation = getattr(diarization, "speaker_diarization", diarization)
 
     for segment, _, speaker in annotation.itertracks(yield_label=True):
@@ -315,7 +401,29 @@ def parse_args():
         help="Forcer la langue pour Whisper (ex: fr, en, de). Si omis, Whisper auto-détecte."
     )
 
-    # Modes exclusifs : transcription seule / diarisation seule / par défaut les deux
+    parser.add_argument(
+        "--json",
+        action="store_true",
+        help="Écrire en plus un fichier JSON à côté du fichier texte (output_file.json)."
+    )
+
+    # === AJOUT : options SRT / VTT ===
+    parser.add_argument(
+        "--srt",
+        action="store_true",
+        help="Écrire en plus un fichier .srt (même base que output_file)."
+    )
+    parser.add_argument(
+        "--vtt",
+        action="store_true",
+        help="Écrire en plus un fichier .vtt (même base que output_file)."
+    )
+    parser.add_argument(
+        "--subs_no_speaker",
+        action="store_true",
+        help="Ne pas préfixer les sous-titres avec le speaker (utile pour un SRT/VTT plus 'classique')."
+    )
+
     mode_group = parser.add_mutually_exclusive_group()
     mode_group.add_argument(
         "--transcription_only",
@@ -338,6 +446,8 @@ def parse_args():
 def main():
     args = parse_args()
 
+    execution_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
     input_path = args.input_path
     output_file = args.output_file
     whisper_model_choice = args.whisper_model
@@ -347,22 +457,42 @@ def main():
     transcription_only = args.transcription_only
     diarization_only = args.diarization_only
 
-    # --- Préparation du fichier ---
     if not os.path.exists(input_path):
         print(f"⚠️ Fichier introuvable : {input_path}")
         sys.exit(1)
 
-    original_input_path = input_path  # pour savoir après s'il faut le supprimer
+    original_input_path = input_path
+    temp_files = []
 
-    # Si vidéo, on extrait l'audio
+    source_name = os.path.basename(original_input_path)
+    language_label = language if language else "auto-détection"
+    header = (
+        "📄 Métadonnées de transcription\n"
+        f"- Fichier source : {source_name}\n"
+        f"- Modèle Whisper : {whisper_model_choice}\n"
+        f"- Langue Whisper : {language_label}\n"
+        f"- Date d'exécution : {execution_time}\n"
+        "\n"
+        "----------------------------------------\n\n"
+    )
+
+    json_meta = {
+        "source_file": source_name,
+        "source_path": original_input_path,
+        "whisper_model": whisper_model_choice,
+        "whisper_language": language_label,
+        "execution_time": execution_time,
+    }
+
     if is_video(input_path):
         input_path = extract_audio(input_path)
+        temp_files.append(input_path)
 
-    # Si audio non conforme 16kHz mono, on convertit
     if not is_valid_audio(input_path):
-        input_path = convert_audio(input_path)
+        converted = convert_audio(input_path)
+        temp_files.append(converted)
+        input_path = converted
 
-    # Durée totale de l'audio (pour le résumé final)
     audio_total_duration = get_audio_duration_seconds(input_path)
 
     transcript_segments = None
@@ -370,16 +500,16 @@ def main():
     waveform = None
     sample_rate = None
 
-    # --- Transcription Whisper (sauf si diarisation seule) ---
     if not diarization_only:
         model = load_whisper_model(whisper_model_choice)
         result = run_whisper_transcription(model, input_path, language=language)
         transcript_segments = result["segments"]
 
-    # --- Diarisation Pyannote (sauf si transcription seule) ---
     if not transcription_only:
         hf_token = get_hf_token(args)
         speaker_segments, waveform, sample_rate = run_diarization(input_path, hf_token)
+
+    include_speaker_in_subs = not args.subs_no_speaker
 
     # =========================
     #   MODE TRANSCRIPTION SEULE
@@ -387,15 +517,14 @@ def main():
     if transcription_only and not diarization_only:
         print("\n📝 Mode : TRANSCRIPTION SEULE (pas de diarisation).")
 
-        # Aperçu console
         print("\n📜 Aperçu de la transcription :")
         for seg in (transcript_segments or [])[:10]:
             print(f"[{format_time(seg['start'])} - {format_time(seg['end'])}] {seg['text']}")
         if transcript_segments and len(transcript_segments) > 10:
             print("... (voir fichier pour le reste)")
 
-        # Écriture fichier
         with open(output_file, "w", encoding="utf-8") as f:
+            f.write(header)
             f.write("📜 Transcription (sans diarisation) :\n\n")
             if not transcript_segments:
                 f.write("(Aucun segment de transcription.)\n")
@@ -405,7 +534,28 @@ def main():
 
         print(f"\n✅ Transcription sauvegardée dans : {output_file}")
 
-        # Résumé
+        # Sous-titres (basés sur Whisper)
+        subs_segments = [
+            {"start": float(t["start"]), "end": float(t["end"]), "text": (t.get("text", "") or "").strip(), "speaker": None}
+            for t in (transcript_segments or [])
+        ]
+        write_subtitles_if_requested(args, output_file, subs_segments, include_speaker=include_speaker_in_subs)
+
+        json_payload = {
+            "meta": {**json_meta, "mode": "transcription_only", "audio_duration_seconds": audio_total_duration},
+            "transcription": [
+                {
+                    "start": float(t["start"]),
+                    "end": float(t["end"]),
+                    "start_hhmmss": hhmmss(float(t["start"])),
+                    "end_hhmmss": hhmmss(float(t["end"])),
+                    "text": (t.get("text", "") or "").strip(),
+                }
+                for t in (transcript_segments or [])
+            ],
+        }
+        write_json_if_requested(args, output_file, json_payload)
+
         print(f"\n📊 Résumé global :")
         print(f"- Durée totale de l'audio analysé : {str(datetime.timedelta(seconds=int(audio_total_duration)))}")
         print(f"- Nombre de segments de transcription : {len(transcript_segments) if transcript_segments else 0}")
@@ -416,7 +566,6 @@ def main():
     elif diarization_only and not transcription_only:
         print("\n🗣️ Mode : DIARISATION SEULE (pas de transcription Whisper).")
 
-        # Temps de parole par speaker
         speaker_durations = {}
         for s in speaker_segments:
             speaker_durations[s["speaker"]] = speaker_durations.get(s["speaker"], 0.0) + (s["end"] - s["start"])
@@ -436,8 +585,8 @@ def main():
         if len(speaker_segments) > 10:
             print("... (voir fichier pour le reste)")
 
-        # Écriture fichier
         with open(output_file, "w", encoding="utf-8") as f:
+            f.write(header)
             f.write("⏳ Temps de parole par speaker :\n")
             for speaker, duration in speaker_durations_formatted.items():
                 f.write(f"🗣️ Speaker {speaker}: {duration}\n")
@@ -451,7 +600,29 @@ def main():
 
         print(f"\n✅ Diarisation sauvegardée dans : {output_file}")
 
-        # Résumé
+        # Pas de SRT/VTT possible ici (pas de texte)
+        if args.srt or args.vtt:
+            print("\n⚠️ SRT/VTT non générés en mode diarisation seule (pas de transcription/texte).")
+
+        json_payload = {
+            "meta": {**json_meta, "mode": "diarization_only", "audio_duration_seconds": audio_total_duration},
+            "speakers": [
+                {"speaker": spk, "duration_seconds": float(dur), "duration_hhmmss": speaker_durations_formatted[spk]}
+                for spk, dur in speaker_durations.items()
+            ],
+            "segments": [
+                {
+                    "speaker": s["speaker"],
+                    "start": float(s["start"]),
+                    "end": float(s["end"]),
+                    "start_hhmmss": hhmmss(float(s["start"])),
+                    "end_hhmmss": hhmmss(float(s["end"])),
+                }
+                for s in (speaker_segments or [])
+            ],
+        }
+        write_json_if_requested(args, output_file, json_payload)
+
         total_speech_duration = sum(speaker_durations.values())
         average_duration = total_speech_duration / len(speaker_durations) if speaker_durations else 0.0
 
@@ -462,16 +633,15 @@ def main():
         print(f"- Durée moyenne par speaker : {str(datetime.timedelta(seconds=int(average_duration)))}")
 
     # =========================
-    #   MODE COMPLET TRANSCRIPTION + DIARISATION
+    #   MODE COMPLET
     # =========================
     else:
         print("\n🔀 Mode : TRANSCRIPTION + DIARISATION.")
 
-        # --- Association transcription <-> speaker ---
         formatted_output = []
         assigned_speakers = []
 
-        OVERLAP_THRESHOLD = 0.01  # seuil pour une association valable
+        OVERLAP_THRESHOLD = 0.01
 
         print("\n🔗 Association des segments transcription <-> speakers...")
         for t_segment in tqdm(transcript_segments, desc="Matching segments"):
@@ -493,7 +663,6 @@ def main():
             )
             assigned_speakers.append(best_speaker)
 
-        # --- Résumé temps de parole par speaker ---
         speaker_durations = {}
         for s in speaker_segments:
             speaker_durations[s["speaker"]] = speaker_durations.get(s["speaker"], 0.0) + (s["end"] - s["start"])
@@ -513,7 +682,6 @@ def main():
         if len(formatted_output) > 10:
             print("... (voir fichier pour le reste)")
 
-        # --- Construction des segments fusionnés (pour le fichier de sortie) ---
         segments = []
         for t, spk in zip(transcript_segments, assigned_speakers):
             segments.append({
@@ -525,8 +693,8 @@ def main():
 
         segments_merged = merge_by_runs(segments)
 
-        # --- Écriture dans le fichier ---
         with open(output_file, "w", encoding="utf-8") as f:
+            f.write(header)
             f.write("⏳ Temps de parole par speaker :\n")
             for speaker, duration in speaker_durations_formatted.items():
                 f.write(f"🗣️ Speaker {speaker}: {duration}\n")
@@ -537,7 +705,33 @@ def main():
 
         print(f"\n✅ Transcription complète sauvegardée dans : {output_file}")
 
-        # --- Résumé final ---
+        # Sous-titres (basés sur segments fusionnés)
+        subs_segments = [
+            {"start": float(s["start"]), "end": float(s["end"]), "text": (s.get("text", "") or "").strip(), "speaker": s.get("speaker")}
+            for s in (segments_merged or [])
+        ]
+        write_subtitles_if_requested(args, output_file, subs_segments, include_speaker=include_speaker_in_subs)
+
+        json_payload = {
+            "meta": {**json_meta, "mode": "transcription_and_diarization", "audio_duration_seconds": audio_total_duration},
+            "speakers": [
+                {"speaker": spk, "duration_seconds": float(dur), "duration_hhmmss": speaker_durations_formatted[spk]}
+                for spk, dur in speaker_durations.items()
+            ],
+            "segments_merged": [
+                {
+                    "speaker": s["speaker"],
+                    "start": float(s["start"]),
+                    "end": float(s["end"]),
+                    "start_hhmmss": hhmmss(float(s["start"])),
+                    "end_hhmmss": hhmmss(float(s["end"])),
+                    "text": (s.get("text", "") or "").strip(),
+                }
+                for s in (segments_merged or [])
+            ],
+        }
+        write_json_if_requested(args, output_file, json_payload)
+
         total_speech_duration = sum(speaker_durations.values())
         average_duration = total_speech_duration / len(speaker_durations) if speaker_durations else 0.0
 
@@ -547,17 +741,18 @@ def main():
         print(f"- Nombre de speakers : {len(speaker_durations)}")
         print(f"- Durée moyenne par speaker : {str(datetime.timedelta(seconds=int(average_duration)))}")
 
-    # --- Nettoyage fichiers temporaires ---
-    if (not keep_temp
-        and input_path != original_input_path
-        and input_path.startswith(tempfile.gettempdir())):
-        try:
-            os.unlink(input_path)
-            print("\n🧹 Fichier temporaire supprimé.")
-        except OSError as e:
-            print(f"\n⚠️ Impossible de supprimer le fichier temporaire : {e}")
-    elif keep_temp:
-        print(f"\n📂 Fichier temporaire conservé : {input_path}")
+    # --- Nettoyage fichiers temporaires (TOUS) ---
+    if keep_temp:
+        for p in temp_files:
+            print(f"\n📂 Fichier temporaire conservé : {p}")
+    else:
+        for p in temp_files:
+            try:
+                if p and os.path.exists(p) and p.startswith(tempfile.gettempdir()):
+                    os.unlink(p)
+                    print(f"\n🧹 Fichier temporaire supprimé : {p}")
+            except OSError as e:
+                print(f"\n⚠️ Impossible de supprimer le fichier temporaire {p} : {e}")
 
 
 if __name__ == "__main__":
