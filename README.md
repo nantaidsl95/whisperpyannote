@@ -41,6 +41,8 @@ Thanks to their authors, maintainers, and contributors for making high-quality o
 - ⏳ Speaking time per speaker  
 - 📜 Clean final transcript  
 - 📈 Progress bars with tqdm  
+- 🎬 Optional subtitle generation (**SRT / VTT**)  
+- 📄 Optional structured output (**JSON**)  
 
 ---
 
@@ -51,6 +53,8 @@ Thanks to their authors, maintainers, and contributors for making high-quality o
 The script relies on FFmpeg to:
 - extract audio from video files
 - convert audio to mono 16 kHz WAV
+
+Audio/video inputs are automatically converted when needed.
 
 ### Install FFmpeg
 
@@ -70,154 +74,27 @@ The script relies on FFmpeg to:
 
 ---
 
-# 🎙️ Recording with OBS (recommended)
-
-Steps:
-
-1. Install OBS: https://obsproject.com/  
-2. Add **Display Capture** or **Window Capture**  
-3. Add **Audio Input Capture** (microphone)  
-4. Optional: capture system audio  
-   - macOS → install **BlackHole** (https://existential.audio/blackhole/)  
-   - Windows → enable **Stereo Mix** or use **VB-Cable**  
-5. Record in MP4 or MKV  
-6. Use the recorded file with `whisperpyannote`
-
-OBS recordings (.mp4, .mov, .mkv) work perfectly.
-
----
-
-## 🚀 Installation
-
-### 1️⃣ Clone the repository
-```
-git clone https://github.com/nantaidsl95/whisperpyannote.git
-cd whisperpyannote
-```
-
-### 2️⃣ Install FFmpeg (required)
-
-### 3️⃣ Create a virtual environment
-```
-python3 -m venv venv
-source venv/bin/activate
-```
-
-### 4️⃣ Install Python dependencies
-```
-pip install -r requirements.txt
-```
-
----
-
 ## 🔑 Hugging Face Token (required for Pyannote)
 
-1. Request access: https://huggingface.co/pyannote/speaker-diarization-community-1  
-2. Create a token: https://huggingface.co/settings/tokens  
-3. Export it:
+Diarization uses the model:
 
 ```
-export HUGGINGFACE_TOKEN="your_token"
+pyannote/speaker-diarization-community-1
 ```
 
----
+Access to this model requires:
+- accepting its conditions on Hugging Face
+- a valid Hugging Face access token
 
-# 🛠️ Full CLI Options
-
-### Required arguments
-
-| Argument | Description |
-|---------|-------------|
-| `input_path` | Audio/video file to process |
-| `output_file` | Output text file |
+The token can be provided in three ways:
+- environment variables `HF_TOKEN` or `HUGGINGFACE_TOKEN`
+- CLI option `--hf_token`
+- interactive prompt (when running in a terminal)
 
 ---
 
-### Transcription & diarization options
+## ⚠️ Known Limitations
 
-| Option | Description | Values |
-|--------|-------------|--------|
-| `--whisper_model` | Whisper model | tiny, base, small, medium, large, turbo |
-| `--language` | Force transcription language | en, fr, de… |
-
----
-
-### Exclusive modes
-
-| Option | Description |
-|--------|-------------|
-| `--transcription_only` | Only transcription |
-| `--diarization_only` | Only diarization |
-
----
-
-### Token management
-
-| Option | Description |
-|--------|-------------|
-| `--hf_token` | Provide HF token directly |
-| `--ask_token` | Force interactive prompt |
-
-Also detected automatically:
-- `HF_TOKEN`
-- `HUGGINGFACE_TOKEN`
-
----
-
-### Temporary files
-
-| Option | Description |
-|--------|-------------|
-| `--keep_temp` | Keep temporary WAV files |
-
----
-
-# 🚀 Usage Examples
-
-```
-python whisperpyannote.py input.mp4 output.txt
-python whisperpyannote.py audio.wav output.txt --transcription_only
-python whisperpyannote.py audio.wav output.txt --whisper_model medium
-python whisperpyannote.py audio.wav output.txt --language fr
-python whisperpyannote.py audio.wav output.txt --hf_token "hf_xxx"
-```
-
----
-
-## 📜 Example Output
-
-```
-⏳ Speaking time per speaker:
-SPEAKER_00: 00:12:34
-SPEAKER_01: 00:08:45
-
-[00:00:01–00:00:05] SPEAKER_00: Hello everyone!
-[00:00:06–00:00:10] SPEAKER_01: Hi, how are you?
-```
-
----
-
-## 📁 Project Structure
-
-```
-whisperpyannote/
-├── whisperpyannote.py
-├── requirements.txt
-├── README.md
-├── LICENSE
-└── .gitignore
-```
-
----
-
-## 📄 License
-
-This project is distributed under the MIT License.  
-See the [LICENSE](./LICENSE) file for details.
-
----
-
-## 👤 Author
-
-Developed by **Marc Delage**  
-GitHub → https://github.com/nantaidsl95
+- diarization accuracy may decrease with overlapping speakers
+- some segments may be assigned to `unknown` speakers
+- Whisper segmentation varies depending on the model
