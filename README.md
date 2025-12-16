@@ -41,6 +41,8 @@ Thanks to their authors, maintainers, and contributors for making high-quality o
 - ⏳ Speaking time per speaker  
 - 📜 Clean final transcript  
 - 📈 Progress bars with tqdm  
+- 🎬 Optional subtitle export (**SRT / VTT**)  
+- 📄 Optional structured output (**JSON**)  
 
 ---
 
@@ -51,6 +53,8 @@ Thanks to their authors, maintainers, and contributors for making high-quality o
 The script relies on FFmpeg to:
 - extract audio from video files
 - convert audio to mono 16 kHz WAV
+
+> Audio/video inputs are automatically converted when needed.
 
 ### Install FFmpeg
 
@@ -112,13 +116,20 @@ pip install -r requirements.txt
 
 ## 🔑 Hugging Face Token (required for Pyannote)
 
-1. Request access: https://huggingface.co/pyannote/speaker-diarization-community-1  
-2. Create a token: https://huggingface.co/settings/tokens  
-3. Export it:
+Diarization uses the model:
 
 ```
-export HUGGINGFACE_TOKEN="your_token"
+pyannote/speaker-diarization-community-1
 ```
+
+Access to this model requires:
+- accepting its conditions on Hugging Face
+- a valid Hugging Face access token
+
+The token can be provided via:
+- environment variables `HF_TOKEN` or `HUGGINGFACE_TOKEN`
+- CLI option `--hf_token`
+- interactive prompt (when running in a terminal)
 
 ---
 
@@ -164,6 +175,22 @@ Also detected automatically:
 
 ---
 
+### Output formats
+
+| Option | Description |
+|--------|-------------|
+| `--json` | Write a JSON file alongside the text output |
+| `--srt` | Generate SRT subtitles |
+| `--vtt` | Generate VTT subtitles |
+| `--subs_no_speaker` | Do not prefix subtitles with speaker labels |
+
+Subtitles behavior:
+- transcription only → Whisper-based subtitles
+- full mode → speaker-merged subtitles
+- diarization only → no subtitles (no text)
+
+---
+
 ### Temporary files
 
 | Option | Description |
@@ -177,9 +204,10 @@ Also detected automatically:
 ```
 python whisperpyannote.py input.mp4 output.txt
 python whisperpyannote.py audio.wav output.txt --transcription_only
+python whisperpyannote.py audio.wav output.txt --diarization_only
 python whisperpyannote.py audio.wav output.txt --whisper_model medium
 python whisperpyannote.py audio.wav output.txt --language fr
-python whisperpyannote.py audio.wav output.txt --hf_token "hf_xxx"
+python whisperpyannote.py input.mp4 output.txt --srt --vtt
 ```
 
 ---
@@ -194,6 +222,14 @@ SPEAKER_01: 00:08:45
 [00:00:01–00:00:05] SPEAKER_00: Hello everyone!
 [00:00:06–00:00:10] SPEAKER_01: Hi, how are you?
 ```
+
+---
+
+## ⚠️ Known Limitations
+
+- diarization accuracy may decrease with overlapping speakers
+- some segments may be assigned to an `unknown` speaker
+- Whisper segmentation depends on the selected model
 
 ---
 
