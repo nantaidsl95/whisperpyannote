@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-GUI PySide6 — Whisper + Pyannote (pilote du script CLI)
+GUI PySide6 — Whisper + Pyannote (CLI driver)
 Auteur : marcdelage
 """
 
@@ -12,98 +12,95 @@ from PySide6 import QtCore, QtGui, QtWidgets
 
 
 # =========================
-#   Configuration générale
+#   General configuration
 # =========================
 
 SCRIPT_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "whisperpyannote.py")
 
-# Langues: (label affiché, code envoyé au CLI)
+# Languages: (display label, code sent to CLI)
 WHISPER_LANG_CHOICES = [
-    ("Auto (détection)", "auto"),
-    ("Français", "fr"),
+    ("Auto (detect)", "auto"),
+    ("French", "fr"),
     ("English", "en"),
-    ("Deutsch", "de"),
-    ("Español", "es"),
-    ("Italiano", "it"),
-    ("Português", "pt"),
-    ("Nederlands", "nl"),
-    ("Svenska", "sv"),
-    ("Norsk", "no"),
-    ("Dansk", "da"),
-    ("Suomi", "fi"),
-    ("Polski", "pl"),
-    ("Čeština", "cs"),
-    ("Slovenčina", "sk"),
-    ("Slovenščina", "sl"),
-    ("Magyar", "hu"),
-    ("Română", "ro"),
-    ("Български", "bg"),
-    ("Ελληνικά", "el"),
-    ("Türkçe", "tr"),
-    ("Русский", "ru"),
-    ("Українська", "uk"),
-    ("العربية", "ar"),
-    ("עברית", "he"),
-    ("فارسی", "fa"),
-    ("हिन्दी", "hi"),
-    ("বাংলা", "bn"),
-    ("தமிழ்", "ta"),
-    ("తెలుగు", "te"),
-    ("اردو", "ur"),
-    ("中文", "zh"),
-    ("日本語", "ja"),
-    ("한국어", "ko"),
-    ("ไทย", "th"),
-    ("Tiếng Việt", "vi"),
-    ("Bahasa Indonesia", "id"),
-    ("Bahasa Melayu", "ms"),
+    ("German", "de"),
+    ("Spanish", "es"),
+    ("Italian", "it"),
+    ("Portuguese", "pt"),
+    ("Dutch", "nl"),
+    ("Swedish", "sv"),
+    ("Norwegian", "no"),
+    ("Danish", "da"),
+    ("Finnish", "fi"),
+    ("Polish", "pl"),
+    ("Czech", "cs"),
+    ("Slovak", "sk"),
+    ("Slovenian", "sl"),
+    ("Hungarian", "hu"),
+    ("Romanian", "ro"),
+    ("Bulgarian", "bg"),
+    ("Greek", "el"),
+    ("Turkish", "tr"),
+    ("Russian", "ru"),
+    ("Ukrainian", "uk"),
+    ("Arabic", "ar"),
+    ("Hebrew", "he"),
+    ("Persian", "fa"),
+    ("Hindi", "hi"),
+    ("Bengali", "bn"),
+    ("Tamil", "ta"),
+    ("Telugu", "te"),
+    ("Urdu", "ur"),
+    ("Chinese", "zh"),
+    ("Japanese", "ja"),
+    ("Korean", "ko"),
+    ("Thai", "th"),
+    ("Vietnamese", "vi"),
+    ("Indonesian", "id"),
+    ("Malay", "ms"),
 ]
 
 
 # =========================
-#   Thème / palette IMT-ish
+#   IMT palette (strict)
 # =========================
 
 IMT_CYAN   = "#00B8DE"
 IMT_NAVY   = "#14223C"
 IMT_WHITE  = "#FFFFFF"
 IMT_LIGHT  = "#EDF3F4"
-IMT_BG     = "#F7FAFB"
-IMT_TEXT   = "#0B1220"
-IMT_MUTED  = "#52606D"
-IMT_BORDER = "#D7E2E6"
-IMT_DARK  = "#0B1220"
-IMT_DARK2 = "#101A33"
+IMT_BLACK  = "#000000"
+IMT_GRAY90 = "#3C3C3C"
+
+# Aliases kept so nothing else breaks
+IMT_BG     = IMT_LIGHT
+IMT_TEXT   = IMT_BLACK
+IMT_MUTED  = IMT_GRAY90
+IMT_BORDER = IMT_NAVY
+IMT_DARK   = IMT_NAVY
+IMT_DARK2  = IMT_NAVY
 
 
 def apply_imt_theme(app: QtWidgets.QApplication):
     qss = f"""
     * {{
-        font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Helvetica, Arial, sans-serif;
+        font-family: Helvetica, Arial, sans-serif;
         font-size: 13px;
+        color: {IMT_BLACK};
     }}
 
-    QWidget {{
-        color: {IMT_TEXT};
-    }}
     #Root {{
-        background: {IMT_BG};
+        background: {IMT_LIGHT};
     }}
 
     #Header, #Header * {{
         background: transparent;
     }}
     #Header {{
-        background: qlineargradient(
-            x1:0, y1:0, x2:1, y2:0,
-            stop:0 #0E2A47,
-            stop:1 {IMT_NAVY}
-        );
+        background: {IMT_NAVY};
         border-radius: 18px;
     }}
     #HeaderText {{
-        background: rgba(0,0,0,0.35);
-        border-radius: 14px;
+        background: transparent;
         padding: 10px 14px;
     }}
     #HeaderTitle {{
@@ -115,22 +112,22 @@ def apply_imt_theme(app: QtWidgets.QApplication):
     }}
     #HeaderSub {{
         background: transparent;
-        color: rgba(255,255,255,0.95);
+        color: {IMT_WHITE};
         font-size: 13px;
         font-weight: 700;
     }}
     #StatusPill {{
-        background: rgba(0,0,0,0.22);
-        border: 1px solid rgba(255,255,255,0.22);
+        background: transparent;
+        border: 1px solid {IMT_WHITE};
         border-radius: 999px;
         padding: 7px 12px;
-        color: rgba(255,255,255,0.98);
+        color: {IMT_WHITE};
         font-weight: 900;
     }}
 
     #Card {{
         background: {IMT_WHITE};
-        border: 1px solid {IMT_BORDER};
+        border: 1px solid {IMT_NAVY};
         border-radius: 18px;
     }}
     #CardTitle {{
@@ -141,12 +138,12 @@ def apply_imt_theme(app: QtWidgets.QApplication):
     }}
     QLabel#Muted {{
         background: transparent;
-        color: {IMT_MUTED};
+        color: {IMT_GRAY90};
     }}
 
     QLineEdit, QComboBox {{
         background: {IMT_LIGHT};
-        border: 1px solid {IMT_BORDER};
+        border: 1px solid {IMT_NAVY};
         border-radius: 14px;
         padding: 10px 12px;
     }}
@@ -158,55 +155,55 @@ def apply_imt_theme(app: QtWidgets.QApplication):
         subcontrol-origin: padding;
         subcontrol-position: top right;
         width: 36px;
-        border-left: 1px solid {IMT_BORDER};
+        border-left: 1px solid {IMT_NAVY};
         border-top-right-radius: 14px;
         border-bottom-right-radius: 14px;
-        background: rgba(237,243,244,0.7);
+        background: {IMT_LIGHT};
     }}
 
     QPushButton {{
         border-radius: 14px;
         padding: 10px 14px;
         font-weight: 900;
-        border: 1px solid {IMT_BORDER};
+        border: 1px solid {IMT_NAVY};
         background: {IMT_WHITE};
         color: {IMT_NAVY};
     }}
     QPushButton:hover {{ border: 1px solid {IMT_CYAN}; }}
     QPushButton:pressed {{ background: {IMT_LIGHT}; }}
     QPushButton:disabled {{
-        color: rgba(20,34,60,0.35);
-        background: #F4F8F9;
-        border: 1px solid #EDF3F5;
+        color: {IMT_GRAY90};
+        background: {IMT_LIGHT};
+        border: 1px solid {IMT_LIGHT};
     }}
     QPushButton#Primary {{
         background: {IMT_CYAN};
-        border: 1px solid rgba(0,0,0,0);
+        border: 1px solid {IMT_CYAN};
         color: {IMT_NAVY};
     }}
     QPushButton#Danger {{
         background: {IMT_NAVY};
-        border: 1px solid rgba(0,0,0,0);
+        border: 1px solid {IMT_NAVY};
         color: {IMT_WHITE};
     }}
     QPushButton#Ghost {{
         background: transparent;
-        border: 1px solid {IMT_BORDER};
+        border: 1px solid {IMT_NAVY};
         color: {IMT_NAVY};
     }}
     QPushButton#Ghost:hover {{
         border: 1px solid {IMT_CYAN};
-        background: rgba(0,184,222,0.06);
+        background: {IMT_LIGHT};
     }}
 
     #DropZone {{
         background: {IMT_WHITE};
-        border: 2px dashed {IMT_BORDER};
+        border: 2px dashed {IMT_NAVY};
         border-radius: 18px;
     }}
     #DropZone[active="true"] {{
         border: 2px dashed {IMT_CYAN};
-        background: rgba(0,184,222,0.06);
+        background: {IMT_LIGHT};
     }}
     #DropTitle {{
         background: transparent;
@@ -216,23 +213,22 @@ def apply_imt_theme(app: QtWidgets.QApplication):
     }}
     #DropHint {{
         background: transparent;
-        color: {IMT_MUTED};
+        color: {IMT_GRAY90};
         font-weight: 700;
     }}
 
     QPlainTextEdit#Console {{
-        background: qlineargradient(x1:0,y1:0,x2:1,y2:1,
-                    stop:0 {IMT_DARK}, stop:1 {IMT_DARK2});
-        border: 1px solid rgba(255,255,255,0.07);
+        background: {IMT_NAVY};
+        border: 1px solid {IMT_NAVY};
         border-radius: 18px;
-        color: rgba(255,255,255,0.93);
+        color: {IMT_WHITE};
         padding: 16px;
-        font-family: "SF Mono", Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+        font-family: Menlo, Monaco, Consolas, "Liberation Mono", monospace;
         font-size: 12px;
     }}
 
     QProgressBar {{
-        border: 1px solid {IMT_BORDER};
+        border: 1px solid {IMT_NAVY};
         border-radius: 999px;
         background: {IMT_LIGHT};
         height: 10px;
@@ -246,7 +242,7 @@ def apply_imt_theme(app: QtWidgets.QApplication):
 
 
 # =========================
-#   Widget : zone de drop
+#   Drop zone widget
 # =========================
 
 class DropZone(QtWidgets.QFrame):
@@ -266,11 +262,11 @@ class DropZone(QtWidgets.QFrame):
         icon.setAlignment(QtCore.Qt.AlignCenter)
         icon.setStyleSheet(f"font-size: 22px; color: {IMT_CYAN}; font-weight: 900;")
 
-        title = QtWidgets.QLabel("Glisse-dépose un fichier audio/vidéo")
+        title = QtWidgets.QLabel("Drag & drop an audio/video file")
         title.setObjectName("DropTitle")
         title.setAlignment(QtCore.Qt.AlignCenter)
 
-        hint = QtWidgets.QLabel("ou clique sur “Parcourir…”")
+        hint = QtWidgets.QLabel('or click "Browse…"')
         hint.setObjectName("DropHint")
         hint.setAlignment(QtCore.Qt.AlignCenter)
 
@@ -306,7 +302,7 @@ class DropZone(QtWidgets.QFrame):
 
 
 # =========================
-#   Widget : carte UI
+#   UI card widget
 # =========================
 
 class Card(QtWidgets.QFrame):
@@ -323,7 +319,7 @@ class Card(QtWidgets.QFrame):
 
 
 # =========================
-#   Fenêtre principale
+#   Main window
 # =========================
 
 class Main(QtWidgets.QWidget):
@@ -356,12 +352,12 @@ class Main(QtWidgets.QWidget):
 
         title = QtWidgets.QLabel("WhisperPyannote")
         title.setObjectName("HeaderTitle")
-        sub = QtWidgets.QLabel("Transcription + Diarisation")
+        sub = QtWidgets.QLabel("Transcription + Diarization")
         sub.setObjectName("HeaderSub")
         tv.addWidget(title)
         tv.addWidget(sub)
 
-        self.status_pill = QtWidgets.QLabel("Prêt")
+        self.status_pill = QtWidgets.QLabel("Ready")
         self.status_pill.setObjectName("StatusPill")
 
         hl.addWidget(header_text)
@@ -369,21 +365,18 @@ class Main(QtWidgets.QWidget):
         hl.addWidget(self.status_pill)
 
         # ----- Widgets -----
-
         self.input_path = QtWidgets.QLineEdit()
         self.input_path.setReadOnly(True)
-        self.input_path.setPlaceholderText("Aucun fichier sélectionné")
+        self.input_path.setPlaceholderText("No file selected")
 
         self.output_path = QtWidgets.QLineEdit()
-        self.output_path.setPlaceholderText("Chemin de sortie… (ex: /path/output.txt)")
+        self.output_path.setPlaceholderText("Output path… (e.g. /path/output.txt)")
 
-        # Mode (labels identiques, data stable)
         self.mode = QtWidgets.QComboBox()
-        self.mode.addItem("Transcription + Diarisation", "full")
+        self.mode.addItem("Transcription + Diarization", "full")
         self.mode.addItem("Transcription", "transcription_only")
-        self.mode.addItem("Diarisation", "diarization_only")
+        self.mode.addItem("Diarization", "diarization_only")
 
-        # Modèle Whisper (labels identiques, data = minuscules attendues par le CLI)
         self.whisper_model = QtWidgets.QComboBox()
         self.whisper_model.addItem("Tiny", "tiny")
         self.whisper_model.addItem("Base", "base")
@@ -392,27 +385,26 @@ class Main(QtWidgets.QWidget):
         self.whisper_model.addItem("Large", "large")
         self.whisper_model.addItem("Turbo", "turbo")
 
-        # Langues (labels complets, data = codes)
         self.lang = QtWidgets.QComboBox()
         for label, code in WHISPER_LANG_CHOICES:
             self.lang.addItem(label, code)
 
         self.hf_token = QtWidgets.QLineEdit()
         self.hf_token.setEchoMode(QtWidgets.QLineEdit.Password)
-        self.hf_token.setPlaceholderText("Token Huggingface (pour Pyannote)")
+        self.hf_token.setPlaceholderText("Hugging Face token (for Pyannote)")
 
-        self.keep_temp = QtWidgets.QCheckBox("Conserver les temporaires")
+        self.keep_temp = QtWidgets.QCheckBox("Keep temporary files")
         self.auto_scroll = QtWidgets.QCheckBox("Auto-scroll logs")
         self.auto_scroll.setChecked(True)
 
         self.export_json = QtWidgets.QCheckBox("JSON")
         self.export_srt = QtWidgets.QCheckBox("SRT")
         self.export_vtt = QtWidgets.QCheckBox("VTT")
-        self.subs_no_speaker = QtWidgets.QCheckBox("Sous-titres sans speaker")
+        self.subs_no_speaker = QtWidgets.QCheckBox("Subtitles without speaker labels")
 
-        self.browse_btn = QtWidgets.QPushButton("Parcourir…")
+        self.browse_btn = QtWidgets.QPushButton("Browse…")
         self.browse_btn.setObjectName("Ghost")
-        self.save_btn = QtWidgets.QPushButton("Sortie…")
+        self.save_btn = QtWidgets.QPushButton("Output…")
         self.save_btn.setObjectName("Ghost")
 
         self.start_btn = QtWidgets.QPushButton("▶ Start")
@@ -421,10 +413,10 @@ class Main(QtWidgets.QWidget):
         self.stop_btn.setObjectName("Danger")
         self.stop_btn.setEnabled(False)
 
-        self.reset_btn = QtWidgets.QPushButton("↺ Réinitialiser")
+        self.reset_btn = QtWidgets.QPushButton("↺ Reset")
         self.reset_btn.setObjectName("Ghost")
 
-        self.open_output_btn = QtWidgets.QPushButton("Ouvrir la sortie")
+        self.open_output_btn = QtWidgets.QPushButton("Open output")
         self.open_output_btn.setObjectName("Ghost")
         self.open_output_btn.setEnabled(False)
 
@@ -445,8 +437,13 @@ class Main(QtWidgets.QWidget):
         top_row = QtWidgets.QHBoxLayout()
         top_row.setSpacing(14)
 
-        c_file = Card("FICHIER")
+        c_file = Card("FILE")
         drop = DropZone()
+
+        # Only change here: prevent overlap by allowing the DropZone to shrink/grow inside its layout
+        drop.setMinimumHeight(140)
+        drop.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+
         c_file.v.addWidget(drop)
 
         row_pick = QtWidgets.QHBoxLayout()
@@ -459,7 +456,7 @@ class Main(QtWidgets.QWidget):
         row_out.addWidget(self.save_btn)
         c_file.v.addLayout(row_out)
 
-        hint = QtWidgets.QLabel("Astuce: SRT/VTT/JSON sont générés en sus du .txt")
+        hint = QtWidgets.QLabel("Tip: SRT/VTT/JSON are generated in addition to the .txt")
         hint.setObjectName("Muted")
         c_file.v.addWidget(hint)
 
@@ -471,10 +468,10 @@ class Main(QtWidgets.QWidget):
         grid.addWidget(QtWidgets.QLabel("Mode"), 0, 0)
         grid.addWidget(self.mode, 0, 1)
 
-        grid.addWidget(QtWidgets.QLabel("Modèle Whisper"), 1, 0)
+        grid.addWidget(QtWidgets.QLabel("Whisper model"), 1, 0)
         grid.addWidget(self.whisper_model, 1, 1)
 
-        grid.addWidget(QtWidgets.QLabel("Langue"), 2, 0)
+        grid.addWidget(QtWidgets.QLabel("Language"), 2, 0)
         grid.addWidget(self.lang, 2, 1)
 
         grid.addWidget(QtWidgets.QLabel("HF token"), 3, 0)
@@ -493,8 +490,8 @@ class Main(QtWidgets.QWidget):
 
         c_opts.v.addLayout(grid)
 
-        top_row.addWidget(c_file, 1)
-        top_row.addWidget(c_opts, 1)
+        top_row.addWidget(c_file, 1, QtCore.Qt.AlignTop)
+        top_row.addWidget(c_opts, 1, QtCore.Qt.AlignTop)
         root.addLayout(top_row, 0)
 
         c_actions = Card("ACTIONS")
@@ -533,10 +530,10 @@ class Main(QtWidgets.QWidget):
         self._restore_settings()
         self._detect_and_apply_script_capabilities()
 
-        self._log("Prêt.\n")
+        self._log("Ready.\n")
 
     # =============================
-    #   Détection capacités script
+    #   Script capabilities detection
     # =============================
 
     def _script_path(self) -> str:
@@ -544,12 +541,12 @@ class Main(QtWidgets.QWidget):
 
     def _get_script_help(self) -> str:
         """
-        Récupère l'aide via "python script -h".
-        Timeout augmenté car certains scripts importent des libs lourdes avant argparse.
+        Fetches help via "python script -h".
+        Increased timeout because some scripts import heavy libs before argparse.
         """
         sp = self._script_path()
         if not os.path.exists(sp):
-            self._log("[GUI] Script introuvable -> help vide")
+            self._log("[GUI] Script not found -> empty help")
             return ""
 
         p = QtCore.QProcess()
@@ -557,44 +554,41 @@ class Main(QtWidgets.QWidget):
 
         p.start(sys.executable, [sp, "-h"])
         if not p.waitForStarted(3000):
-            self._log(f"[GUI] Help: process non démarré (python={sys.executable})")
+            self._log(f"[GUI] Help: process did not start (python={sys.executable})")
             return ""
 
-        # Avant: 6000ms (souvent trop court). Ici: 30s.
         if not p.waitForFinished(30000):
             self._log("[GUI] Help: timeout -> kill()")
             try:
                 p.kill()
             except Exception:
                 pass
-            # on lit quand même ce qui a déjà été produit (si quelque chose est sorti)
 
         out = bytes(p.readAll()).decode("utf-8", "replace").strip()
         self._log(f"[GUI] Help: exitCode={p.exitCode()} exitStatus={p.exitStatus()}")
         if not out:
-            self._log("[GUI] Help: sortie vide capturée")
+            self._log("[GUI] Help: captured empty output")
 
         return out
 
     def _detect_and_apply_script_capabilities(self):
         sp = self._script_path()
-        self._log(f"[GUI] Script path utilisé = {sp}")
+        self._log(f"[GUI] Using script path = {sp}")
 
         help_txt = self._get_script_help()
         if not help_txt:
-            # IMPORTANT: on ne désactive plus les exports si la détection échoue
-            self._log("[GUI] Help vide -> détection impossible, exports laissés tels quels.\n")
+            self._log("[GUI] Empty help -> cannot detect, keeping export options as-is.\n")
             return
 
         def supports(flag: str) -> bool:
             return (flag in help_txt) or (f"{flag}]" in help_txt) or (f"{flag} " in help_txt)
 
-        self._set_export_enabled(self.export_json, supports("--json"), f"Option non supportée par {os.path.basename(sp)}")
-        self._set_export_enabled(self.export_srt, supports("--srt"), f"Option non supportée par {os.path.basename(sp)}")
-        self._set_export_enabled(self.export_vtt, supports("--vtt"), f"Option non supportée par {os.path.basename(sp)}")
-        self._set_export_enabled(self.subs_no_speaker, supports("--subs_no_speaker"), f"Option non supportée par {os.path.basename(sp)}")
+        self._set_export_enabled(self.export_json, supports("--json"), f"Option not supported by {os.path.basename(sp)}")
+        self._set_export_enabled(self.export_srt, supports("--srt"), f"Option not supported by {os.path.basename(sp)}")
+        self._set_export_enabled(self.export_vtt, supports("--vtt"), f"Option not supported by {os.path.basename(sp)}")
+        self._set_export_enabled(self.subs_no_speaker, supports("--subs_no_speaker"), f"Option not supported by {os.path.basename(sp)}")
 
-        self._log("\n[GUI] Capacités détectées:")
+        self._log("\n[GUI] Detected capabilities:")
         self._log(f"  --json: {supports('--json')}")
         self._log(f"  --srt: {supports('--srt')}")
         self._log(f"  --vtt: {supports('--vtt')}")
@@ -609,7 +603,7 @@ class Main(QtWidgets.QWidget):
             cb.setToolTip("")
 
     # =========================
-    #   Préférences (Settings)
+    #   Preferences (Settings)
     # =========================
 
     def _set_combo_by_data(self, combo: QtWidgets.QComboBox, data_value: str, fallback_data: str):
@@ -679,7 +673,7 @@ class Main(QtWidgets.QWidget):
         super().closeEvent(event)
 
     # =========================
-    #   Réinitialisation
+    #   Reset
     # =========================
 
     def reset_settings(self):
@@ -726,11 +720,11 @@ class Main(QtWidgets.QWidget):
         self.stop_btn.setEnabled(False)
         self.reset_btn.setEnabled(True)
         self.open_output_btn.setEnabled(False)
-        self._set_status("Prêt")
-        self._log("↺ Réglages réinitialisés.\n")
+        self._set_status("Ready")
+        self._log("↺ Settings reset.\n")
 
     # =========================
-    #   UX : statut / logs
+    #   UX: status / logs
     # =========================
 
     def _refresh_open_button(self):
@@ -751,7 +745,7 @@ class Main(QtWidgets.QWidget):
         return " ".join(shlex.quote(a) for a in args)
 
     # =========================
-    #   Sélection fichiers
+    #   File pickers
     # =========================
 
     def pick_input(self):
@@ -792,7 +786,7 @@ class Main(QtWidgets.QWidget):
         QtGui.QDesktopServices.openUrl(QtCore.QUrl.fromLocalFile(outp))
 
     # =========================
-    #   Process : construction args
+    #   Process: build args
     # =========================
 
     def build_args(self):
@@ -816,10 +810,8 @@ class Main(QtWidgets.QWidget):
 
         args = [sys.executable, sp, inp, outp]
 
-        # CLI attend: tiny/base/small/medium/large/turbo
         args += ["--whisper_model", str(self.whisper_model.currentData())]
 
-        # Auto => pas de flag. Sinon code (fr/en/...)
         lang_code = str(self.lang.currentData() or "auto")
         if lang_code != "auto":
             args += ["--language", lang_code]
@@ -849,7 +841,7 @@ class Main(QtWidgets.QWidget):
         return args
 
     # =========================
-    #   Process : start/stop
+    #   Process: start/stop
     # =========================
 
     def start(self):
@@ -872,28 +864,28 @@ class Main(QtWidgets.QWidget):
         self.stop_btn.setEnabled(True)
         self.reset_btn.setEnabled(False)
         self.progress.setVisible(True)
-        self._set_status("En cours…")
+        self._set_status("Running…")
 
         self._log("\n" + "=" * 72)
-        self._log("▶ Lancement:")
+        self._log("▶ Launch:")
         self._log(self._format_cmd_for_log(args))
 
         self.proc.start(args[0], args[1:])
         if not self.proc.waitForStarted(3000):
-            self._log("❌ Impossible de démarrer le process.")
+            self._log("❌ Failed to start process.")
             self._restore_ui_after_run(error=True)
 
     def stop(self):
         if self.proc.state() == QtCore.QProcess.NotRunning:
             return
-        self._log("⏹ Stop demandé…")
-        self._set_status("Arrêt…")
+        self._log("⏹ Stop requested…")
+        self._set_status("Stopping…")
         self.proc.terminate()
         QtCore.QTimer.singleShot(2500, self._kill_if_needed)
 
     def _kill_if_needed(self):
         if self.proc.state() != QtCore.QProcess.NotRunning:
-            self._log("⚠️ Process ne répond pas -> kill()")
+            self._log("⚠️ Process not responding -> kill()")
             self.proc.kill()
 
     def _restore_ui_after_run(self, error: bool):
@@ -901,11 +893,11 @@ class Main(QtWidgets.QWidget):
         self.stop_btn.setEnabled(False)
         self.reset_btn.setEnabled(True)
         self.progress.setVisible(False)
-        self._set_status("Erreur" if error else "Terminé")
+        self._set_status("Error" if error else "Done")
         self._refresh_open_button()
 
     # =========================
-    #   Process : lecture logs
+    #   Process: logs
     # =========================
 
     def _read(self):
@@ -918,12 +910,12 @@ class Main(QtWidgets.QWidget):
         self._log(f"❌ QProcess error: {err}")
 
     def _finished(self, code, status):
-        self._log(f"\n✅ Terminé (code={code}).")
+        self._log(f"\n✅ Finished (code={code}).")
         self._restore_ui_after_run(error=(code != 0))
 
 
 # =========================
-#   Point d'entrée
+#   Entry point
 # =========================
 
 if __name__ == "__main__":
