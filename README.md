@@ -44,6 +44,13 @@ Thanks to their authors, maintainers, and contributors for making high-quality o
 
 ---
 
+## 🖥️ Graphical User Interface
+
+A desktop GUI is available.  
+See 👉 [GUI.md](./GUI.md)
+
+---
+
 ## ⚙️ System Requirement
 
 **FFmpeg is required** and must be available in your system PATH.
