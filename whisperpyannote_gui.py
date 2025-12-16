@@ -8,7 +8,156 @@ Auteur : marcdelage
 import os
 import sys
 import shlex
+from datetime import datetime
 from PySide6 import QtCore, QtGui, QtWidgets
+
+
+# =========================
+#   I18N (FR / EN)
+# =========================
+
+I18N = {
+    "fr": {
+        "app_title": "WhisperPyannote",
+        "app_sub": "Transcription + Diarisation",
+        "status_ready": "Prêt",
+        "status_running": "En cours…",
+        "status_stopping": "Arrêt…",
+        "status_done": "Terminé",
+        "status_error": "Erreur",
+
+        "card_file": "FICHIER",
+        "card_options": "OPTIONS",
+        "card_actions": "ACTIONS",
+        "card_logs": "Logs",
+
+        "drop_title": "Glissez-déposez un fichier audio/vidéo",
+        "drop_hint": 'ou cliquez sur "Parcourir…"',
+
+        "btn_browse": "Parcourir…",
+        "btn_output": "Sortie…",
+        "btn_start": "▶ Démarrer",
+        "btn_stop": "⏹ Stop",
+        "btn_reset": "↺ Réinitialiser",
+        "btn_open_output": "Ouvrir la sortie",
+
+        "lbl_mode": "Mode",
+        "lbl_whisper_model": "Modèle Whisper",
+        "lbl_language": "Langue",
+        "lbl_hf_token": "Token HF",
+
+        "tip_exports": "Astuce : SRT/VTT/JSON sont générés en plus du .txt",
+
+        "dlg_reset_title": "Réinitialiser",
+        "dlg_reset_body": "Réinitialiser tous les réglages et effacer les préférences sauvegardées ?",
+
+        "dlg_pick_input_title": "Choisir un fichier audio/vidéo",
+        "dlg_pick_input_filter": "Audio/Vidéo (*.wav *.mp3 *.m4a *.aac *.flac *.ogg *.mp4 *.mkv *.mov *.avi *.webm);;Tous (*.*)",
+        "dlg_pick_output_title": "Choisir le fichier de sortie",
+        "dlg_pick_output_filter": "TXT (*.txt);;Tous (*.*)",
+
+        "msg_error_title": "Erreur",
+        "msg_info_title": "Info",
+        "msg_output_missing": "Le fichier de sortie n'existe pas encore.",
+
+        "err_script_missing": "Script introuvable : {sp}",
+        "err_invalid_input": "Entrée invalide (fichier manquant).",
+        "err_missing_output": "Sortie manquante.",
+
+        "log_ready": "Prêt.\n",
+        "log_reset_done": "↺ Réglages réinitialisés.\n",
+        "log_stop_requested": "⏹ Arrêt demandé…",
+        "log_kill": "⚠️ Process not responding -> kill()",
+        "log_failed_start": "❌ Failed to start process.",
+        "log_finished": "✅ Terminé (code={code}).",
+        "log_launch": "▶ Lancement:",
+        "log_script_not_found": "[GUI] Script introuvable -> empty help",
+        "log_help_start_fail": "[GUI] Help: process did not start (python={py})",
+        "log_help_timeout": "[GUI] Help: timeout -> kill()",
+        "log_help_exit": "[GUI] Help: exitCode={code} exitStatus={status}",
+        "log_help_empty": "[GUI] Help: captured empty output",
+        "log_using_script": "[GUI] Using script path = {sp}",
+        "log_empty_help": "[GUI] Empty help -> cannot detect, keeping export options as-is.\n",
+        "log_detected_caps": "[GUI] Detected capabilities:",
+        "log_caps_json": "  --json: {v}",
+        "log_caps_srt": "  --srt: {v}",
+        "log_caps_vtt": "  --vtt: {v}",
+        "log_caps_subs": "  --subs_no_speaker: {v}",
+        "log_qprocess_error": "❌ QProcess error: {err}",
+    },
+    "en": {
+        "app_title": "WhisperPyannote",
+        "app_sub": "Transcription + Diarization",
+        "status_ready": "Ready",
+        "status_running": "Running…",
+        "status_stopping": "Stopping…",
+        "status_done": "Done",
+        "status_error": "Error",
+
+        "card_file": "FILE",
+        "card_options": "OPTIONS",
+        "card_actions": "ACTIONS",
+        "card_logs": "Logs",
+
+        "drop_title": "Drag & drop an audio/video file",
+        "drop_hint": 'or click "Browse…"',
+
+        "btn_browse": "Browse…",
+        "btn_output": "Output…",
+        "btn_start": "▶ Start",
+        "btn_stop": "⏹ Stop",
+        "btn_reset": "↺ Reset",
+        "btn_open_output": "Open output",
+
+        "lbl_mode": "Mode",
+        "lbl_whisper_model": "Whisper model",
+        "lbl_language": "Language",
+        "lbl_hf_token": "HF token",
+
+        "tip_exports": "Tip: SRT/VTT/JSON are generated in addition to the .txt",
+
+        "dlg_reset_title": "Reset",
+        "dlg_reset_body": "Reset all settings and clear saved preferences?",
+
+        "dlg_pick_input_title": "Choose an audio/video file",
+        "dlg_pick_input_filter": "Audio/Video (*.wav *.mp3 *.m4a *.aac *.flac *.ogg *.mp4 *.mkv *.mov *.avi *.webm);;All (*.*)",
+        "dlg_pick_output_title": "Choose output file",
+        "dlg_pick_output_filter": "TXT (*.txt);;All (*.*)",
+
+        "msg_error_title": "Error",
+        "msg_info_title": "Info",
+        "msg_output_missing": "The output file does not exist yet.",
+
+        "err_script_missing": "Script not found: {sp}",
+        "err_invalid_input": "Invalid input (missing file).",
+        "err_missing_output": "Missing output.",
+
+        "log_ready": "Ready.\n",
+        "log_reset_done": "↺ Settings reset.\n",
+        "log_stop_requested": "⏹ Stop requested…",
+        "log_kill": "⚠️ Process not responding -> kill()",
+        "log_failed_start": "❌ Failed to start process.",
+        "log_finished": "✅ Finished (code={code}).",
+        "log_launch": "▶ Launch:",
+        "log_script_not_found": "[GUI] Script not found -> empty help",
+        "log_help_start_fail": "[GUI] Help: process did not start (python={py})",
+        "log_help_timeout": "[GUI] Help: timeout -> kill()",
+        "log_help_exit": "[GUI] Help: exitCode={code} exitStatus={status}",
+        "log_help_empty": "[GUI] Help: captured empty output",
+        "log_using_script": "[GUI] Using script path = {sp}",
+        "log_empty_help": "[GUI] Empty help -> cannot detect, keeping export options as-is.\n",
+        "log_detected_caps": "[GUI] Detected capabilities:",
+        "log_caps_json": "  --json: {v}",
+        "log_caps_srt": "  --srt: {v}",
+        "log_caps_vtt": "  --vtt: {v}",
+        "log_caps_subs": "  --subs_no_speaker: {v}",
+        "log_qprocess_error": "❌ QProcess error: {err}",
+    },
+}
+
+
+def _ts() -> str:
+    return datetime.now().strftime("[%H:%M:%S]")
 
 
 # =========================
@@ -17,7 +166,6 @@ from PySide6 import QtCore, QtGui, QtWidgets
 
 SCRIPT_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "whisperpyannote.py")
 
-# Languages: (display label, code sent to CLI)
 WHISPER_LANG_CHOICES = [
     ("Auto (detect)", "auto"),
     ("French", "fr"),
@@ -71,7 +219,6 @@ IMT_LIGHT  = "#EDF3F4"
 IMT_BLACK  = "#000000"
 IMT_GRAY90 = "#3C3C3C"
 
-# Aliases kept so nothing else breaks
 IMT_BG     = IMT_LIGHT
 IMT_TEXT   = IMT_BLACK
 IMT_MUTED  = IMT_GRAY90
@@ -145,25 +292,67 @@ def apply_imt_theme(app: QtWidgets.QApplication):
         background: {IMT_LIGHT};
         border: 1px solid {IMT_NAVY};
         border-radius: 14px;
-        padding: 10px 12px;
+        padding: 6px 10px;
+        min-height: 34px;
+        color: {IMT_BLACK};
     }}
     QLineEdit:focus, QComboBox:focus {{
         background: {IMT_WHITE};
         border: 1px solid {IMT_CYAN};
     }}
+
     QComboBox::drop-down {{
         subcontrol-origin: padding;
         subcontrol-position: top right;
-        width: 36px;
+        width: 32px;
         border-left: 1px solid {IMT_NAVY};
-        border-top-right-radius: 14px;
-        border-bottom-right-radius: 14px;
+        background: {IMT_LIGHT};
+    }}
+
+    /* (On garde ce style, mais le FIX principal est côté Python via setView + palette) */
+    QListView#ComboPopup {{
+        background: {IMT_WHITE};
+        color: {IMT_BLACK};
+        border: 1px solid {IMT_NAVY};
+        outline: 0;
+    }}
+    QListView#ComboPopup::item {{
+        padding: 6px 10px;
+        background: {IMT_WHITE};
+        color: {IMT_BLACK};
+    }}
+    QListView#ComboPopup::item:hover {{
+        background: {IMT_LIGHT};
+        color: {IMT_BLACK};
+    }}
+    QListView#ComboPopup::item:selected {{
+        background: {IMT_CYAN};
+        color: {IMT_NAVY};
+    }}
+
+    QCheckBox {{
+        spacing: 8px;
+        font-weight: 700;
+        color: {IMT_BLACK};
+    }}
+    QCheckBox::indicator {{
+        width: 16px;
+        height: 16px;
+        border: 1px solid {IMT_NAVY};
+        background: {IMT_WHITE};
+    }}
+    QCheckBox::indicator:checked {{
+        background: {IMT_CYAN};
+    }}
+    QCheckBox::indicator:disabled {{
+        border: 1px solid {IMT_LIGHT};
         background: {IMT_LIGHT};
     }}
 
     QPushButton {{
         border-radius: 14px;
-        padding: 10px 14px;
+        padding: 6px 12px;
+        min-height: 34px;
         font-weight: 900;
         border: 1px solid {IMT_NAVY};
         background: {IMT_WHITE};
@@ -194,6 +383,23 @@ def apply_imt_theme(app: QtWidgets.QApplication):
     QPushButton#Ghost:hover {{
         border: 1px solid {IMT_CYAN};
         background: {IMT_LIGHT};
+    }}
+
+    QPushButton#LangToggle {{
+        background: transparent;
+        border: 1px solid {IMT_WHITE};
+        color: {IMT_WHITE};
+        font-weight: 900;
+        min-height: 28px;
+        padding: 6px 10px;
+    }}
+    QPushButton#LangToggle:hover {{
+        border: 1px solid {IMT_CYAN};
+        background: rgba(255,255,255,0.08);
+        color: {IMT_WHITE};
+    }}
+    QPushButton#LangToggle:pressed {{
+        background: rgba(255,255,255,0.14);
     }}
 
     #DropZone {{
@@ -232,11 +438,41 @@ def apply_imt_theme(app: QtWidgets.QApplication):
         border-radius: 999px;
         background: {IMT_LIGHT};
         height: 10px;
+        min-height: 10px;
     }}
     QProgressBar::chunk {{
         border-radius: 999px;
         background: {IMT_CYAN};
     }}
+
+    /* =========================================================
+       STRICT: remove ALL rounding (override specific selectors)
+       ========================================================= */
+    * {{ border-radius: 0px !important; }}
+    *::chunk,
+    *::handle,
+    *::indicator,
+    *::drop-down,
+    *::item,
+    *::tab,
+    *::title {{ border-radius: 0px !important; }}
+
+    #Header {{ border-radius: 0px !important; }}
+    #StatusPill {{ border-radius: 0px !important; }}
+    #Card {{ border-radius: 0px !important; }}
+    #DropZone {{ border-radius: 0px !important; }}
+    QPlainTextEdit#Console {{ border-radius: 0px !important; }}
+
+    QLineEdit, QComboBox {{ border-radius: 0px !important; }}
+    QComboBox::drop-down {{
+        border-top-right-radius: 0px !important;
+        border-bottom-right-radius: 0px !important;
+        border-radius: 0px !important;
+    }}
+
+    QPushButton {{ border-radius: 0px !important; }}
+    QProgressBar {{ border-radius: 0px !important; }}
+    QProgressBar::chunk {{ border-radius: 0px !important; }}
     """
     app.setStyleSheet(qss)
 
@@ -248,8 +484,10 @@ def apply_imt_theme(app: QtWidgets.QApplication):
 class DropZone(QtWidgets.QFrame):
     fileDropped = QtCore.Signal(str)
 
-    def __init__(self):
+    def __init__(self, tr_callable):
         super().__init__()
+        self._tr = tr_callable
+
         self.setAcceptDrops(True)
         self.setObjectName("DropZone")
         self.setProperty("active", "false")
@@ -262,17 +500,23 @@ class DropZone(QtWidgets.QFrame):
         icon.setAlignment(QtCore.Qt.AlignCenter)
         icon.setStyleSheet(f"font-size: 22px; color: {IMT_CYAN}; font-weight: 900;")
 
-        title = QtWidgets.QLabel("Drag & drop an audio/video file")
-        title.setObjectName("DropTitle")
-        title.setAlignment(QtCore.Qt.AlignCenter)
+        self.title_lbl = QtWidgets.QLabel("")
+        self.title_lbl.setObjectName("DropTitle")
+        self.title_lbl.setAlignment(QtCore.Qt.AlignCenter)
 
-        hint = QtWidgets.QLabel('or click "Browse…"')
-        hint.setObjectName("DropHint")
-        hint.setAlignment(QtCore.Qt.AlignCenter)
+        self.hint_lbl = QtWidgets.QLabel("")
+        self.hint_lbl.setObjectName("DropHint")
+        self.hint_lbl.setAlignment(QtCore.Qt.AlignCenter)
 
         lay.addWidget(icon)
-        lay.addWidget(title)
-        lay.addWidget(hint)
+        lay.addWidget(self.title_lbl)
+        lay.addWidget(self.hint_lbl)
+
+        self.retranslate()
+
+    def retranslate(self):
+        self.title_lbl.setText(self._tr("drop_title"))
+        self.hint_lbl.setText(self._tr("drop_hint"))
 
     def _set_active(self, active: bool):
         self.setProperty("active", "true" if active else "false")
@@ -313,9 +557,12 @@ class Card(QtWidgets.QFrame):
         self.v.setContentsMargins(16, 16, 16, 16)
         self.v.setSpacing(10)
 
-        t = QtWidgets.QLabel(title)
-        t.setObjectName("CardTitle")
-        self.v.addWidget(t)
+        self.t = QtWidgets.QLabel(title)
+        self.t.setObjectName("CardTitle")
+        self.v.addWidget(self.t)
+
+    def setTitle(self, title: str):
+        self.t.setText(title)
 
 
 # =========================
@@ -333,6 +580,9 @@ class Main(QtWidgets.QWidget):
         self.resize(1120, 780)
 
         self.settings = QtCore.QSettings(self.ORG, self.APP)
+        self.ui_lang = self.settings.value("ui/lang", "fr")
+        if self.ui_lang not in ("fr", "en"):
+            self.ui_lang = "fr"
 
         self.proc = QtCore.QProcess(self)
         self.proc.setProcessChannelMode(QtCore.QProcess.MergedChannels)
@@ -350,27 +600,35 @@ class Main(QtWidgets.QWidget):
         tv.setContentsMargins(10, 8, 10, 8)
         tv.setSpacing(2)
 
-        title = QtWidgets.QLabel("WhisperPyannote")
-        title.setObjectName("HeaderTitle")
-        sub = QtWidgets.QLabel("Transcription + Diarization")
-        sub.setObjectName("HeaderSub")
-        tv.addWidget(title)
-        tv.addWidget(sub)
+        self.title_lbl = QtWidgets.QLabel(self.tr("app_title"))
+        self.title_lbl.setObjectName("HeaderTitle")
+        self.sub_lbl = QtWidgets.QLabel(self.tr("app_sub"))
+        self.sub_lbl.setObjectName("HeaderSub")
+        tv.addWidget(self.title_lbl)
+        tv.addWidget(self.sub_lbl)
 
-        self.status_pill = QtWidgets.QLabel("Ready")
+        self.status_pill = QtWidgets.QLabel(self.tr("status_ready"))
         self.status_pill.setObjectName("StatusPill")
+
+        self.lang_btn = QtWidgets.QPushButton(self.ui_lang.upper())
+        self.lang_btn.setObjectName("LangToggle")
+        self.lang_btn.setFixedWidth(62)
+        self.lang_btn.clicked.connect(self.toggle_lang)
 
         hl.addWidget(header_text)
         hl.addStretch(1)
+        hl.addWidget(self.lang_btn)
         hl.addWidget(self.status_pill)
 
         # ----- Widgets -----
         self.input_path = QtWidgets.QLineEdit()
         self.input_path.setReadOnly(True)
         self.input_path.setPlaceholderText("No file selected")
+        self.input_path.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed)
 
         self.output_path = QtWidgets.QLineEdit()
         self.output_path.setPlaceholderText("Output path… (e.g. /path/output.txt)")
+        self.output_path.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed)
 
         self.mode = QtWidgets.QComboBox()
         self.mode.addItem("Transcription + Diarization", "full")
@@ -389,6 +647,11 @@ class Main(QtWidgets.QWidget):
         for label, code in WHISPER_LANG_CHOICES:
             self.lang.addItem(label, code)
 
+        # ✅ FIX robuste: forcer view + palette pour rendre le popup visible partout
+        self._force_combo_popup_visible(self.mode)
+        self._force_combo_popup_visible(self.whisper_model)
+        self._force_combo_popup_visible(self.lang)
+
         self.hf_token = QtWidgets.QLineEdit()
         self.hf_token.setEchoMode(QtWidgets.QLineEdit.Password)
         self.hf_token.setPlaceholderText("Hugging Face token (for Pyannote)")
@@ -402,23 +665,30 @@ class Main(QtWidgets.QWidget):
         self.export_vtt = QtWidgets.QCheckBox("VTT")
         self.subs_no_speaker = QtWidgets.QCheckBox("Subtitles without speaker labels")
 
-        self.browse_btn = QtWidgets.QPushButton("Browse…")
+        self.browse_btn = QtWidgets.QPushButton(self.tr("btn_browse"))
         self.browse_btn.setObjectName("Ghost")
-        self.save_btn = QtWidgets.QPushButton("Output…")
+        self.save_btn = QtWidgets.QPushButton(self.tr("btn_output"))
         self.save_btn.setObjectName("Ghost")
 
-        self.start_btn = QtWidgets.QPushButton("▶ Start")
+        BTN_W = 128
+        self.browse_btn.setFixedWidth(BTN_W)
+        self.save_btn.setFixedWidth(BTN_W)
+
+        self.start_btn = QtWidgets.QPushButton(self.tr("btn_start"))
         self.start_btn.setObjectName("Primary")
-        self.stop_btn = QtWidgets.QPushButton("⏹ Stop")
+        self.stop_btn = QtWidgets.QPushButton(self.tr("btn_stop"))
         self.stop_btn.setObjectName("Danger")
         self.stop_btn.setEnabled(False)
 
-        self.reset_btn = QtWidgets.QPushButton("↺ Reset")
+        self.reset_btn = QtWidgets.QPushButton(self.tr("btn_reset"))
         self.reset_btn.setObjectName("Ghost")
 
-        self.open_output_btn = QtWidgets.QPushButton("Open output")
+        self.open_output_btn = QtWidgets.QPushButton(self.tr("btn_open_output"))
         self.open_output_btn.setObjectName("Ghost")
         self.open_output_btn.setEnabled(False)
+
+        for b in (self.start_btn, self.stop_btn, self.reset_btn, self.open_output_btn):
+            b.setMinimumHeight(34)
 
         self.progress = QtWidgets.QProgressBar()
         self.progress.setRange(0, 0)
@@ -437,44 +707,47 @@ class Main(QtWidgets.QWidget):
         top_row = QtWidgets.QHBoxLayout()
         top_row.setSpacing(14)
 
-        c_file = Card("FILE")
-        drop = DropZone()
+        self.c_file = Card(self.tr("card_file"))
+        drop = DropZone(self.tr)
 
-        # Only change here: prevent overlap by allowing the DropZone to shrink/grow inside its layout
         drop.setMinimumHeight(140)
         drop.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
 
-        c_file.v.addWidget(drop)
+        self.c_file.v.addWidget(drop)
 
         row_pick = QtWidgets.QHBoxLayout()
         row_pick.addWidget(self.input_path, 1)
         row_pick.addWidget(self.browse_btn)
-        c_file.v.addLayout(row_pick)
+        self.c_file.v.addLayout(row_pick)
 
         row_out = QtWidgets.QHBoxLayout()
         row_out.addWidget(self.output_path, 1)
         row_out.addWidget(self.save_btn)
-        c_file.v.addLayout(row_out)
+        self.c_file.v.addLayout(row_out)
 
-        hint = QtWidgets.QLabel("Tip: SRT/VTT/JSON are generated in addition to the .txt")
-        hint.setObjectName("Muted")
-        c_file.v.addWidget(hint)
+        self.hint = QtWidgets.QLabel(self.tr("tip_exports"))
+        self.hint.setObjectName("Muted")
+        self.c_file.v.addWidget(self.hint)
 
-        c_opts = Card("OPTIONS")
+        self.c_opts = Card(self.tr("card_options"))
         grid = QtWidgets.QGridLayout()
         grid.setHorizontalSpacing(10)
         grid.setVerticalSpacing(10)
 
-        grid.addWidget(QtWidgets.QLabel("Mode"), 0, 0)
+        self.lbl_mode = QtWidgets.QLabel(self.tr("lbl_mode"))
+        grid.addWidget(self.lbl_mode, 0, 0)
         grid.addWidget(self.mode, 0, 1)
 
-        grid.addWidget(QtWidgets.QLabel("Whisper model"), 1, 0)
+        self.lbl_whisper_model = QtWidgets.QLabel(self.tr("lbl_whisper_model"))
+        grid.addWidget(self.lbl_whisper_model, 1, 0)
         grid.addWidget(self.whisper_model, 1, 1)
 
-        grid.addWidget(QtWidgets.QLabel("Language"), 2, 0)
+        self.lbl_language = QtWidgets.QLabel(self.tr("lbl_language"))
+        grid.addWidget(self.lbl_language, 2, 0)
         grid.addWidget(self.lang, 2, 1)
 
-        grid.addWidget(QtWidgets.QLabel("HF token"), 3, 0)
+        self.lbl_hf = QtWidgets.QLabel(self.tr("lbl_hf_token"))
+        grid.addWidget(self.lbl_hf, 3, 0)
         grid.addWidget(self.hf_token, 3, 1)
 
         grid.addWidget(self.keep_temp, 4, 0, 1, 2)
@@ -488,13 +761,16 @@ class Main(QtWidgets.QWidget):
         exp_box.addWidget(self.subs_no_speaker)
         grid.addLayout(exp_box, 6, 0, 1, 2)
 
-        c_opts.v.addLayout(grid)
+        self.c_opts.v.addLayout(grid)
 
-        top_row.addWidget(c_file, 1, QtCore.Qt.AlignTop)
-        top_row.addWidget(c_opts, 1, QtCore.Qt.AlignTop)
+        self.c_file.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+        self.c_opts.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+
+        top_row.addWidget(self.c_file, 1)
+        top_row.addWidget(self.c_opts, 1)
         root.addLayout(top_row, 0)
 
-        c_actions = Card("ACTIONS")
+        self.c_actions = Card(self.tr("card_actions"))
         btns = QtWidgets.QHBoxLayout()
         btns.setSpacing(10)
         btns.addWidget(self.start_btn)
@@ -502,13 +778,13 @@ class Main(QtWidgets.QWidget):
         btns.addWidget(self.reset_btn)
         btns.addWidget(self.open_output_btn)
         btns.addStretch(1)
-        c_actions.v.addLayout(btns)
-        c_actions.v.addWidget(self.progress)
-        root.addWidget(c_actions, 0)
+        self.c_actions.v.addLayout(btns)
+        self.c_actions.v.addWidget(self.progress)
+        root.addWidget(self.c_actions, 0)
 
-        c_logs = Card("Logs")
-        c_logs.v.addWidget(self.console, 1)
-        root.addWidget(c_logs, 1)
+        self.c_logs = Card(self.tr("card_logs"))
+        self.c_logs.v.addWidget(self.console, 1)
+        root.addWidget(self.c_logs, 1)
 
         # ----- Signals -----
         self.browse_btn.clicked.connect(self.pick_input)
@@ -530,7 +806,79 @@ class Main(QtWidgets.QWidget):
         self._restore_settings()
         self._detect_and_apply_script_capabilities()
 
-        self._log("Ready.\n")
+        self._log(self.tr("log_ready"))
+
+    # =========================
+    #   Combo popup hard-fix
+    # =========================
+
+    def _force_combo_popup_visible(self, combo: QtWidgets.QComboBox):
+        # Force a dedicated QListView so the popup is not "weird" on some platforms/styles
+        view = QtWidgets.QListView()
+        view.setObjectName("ComboPopup")
+        view.setUniformItemSizes(True)
+        view.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
+        view.setSelectionMode(QtWidgets.QAbstractItemView.SingleSelection)
+        view.setVerticalScrollMode(QtWidgets.QAbstractItemView.ScrollPerPixel)
+        view.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+
+        # Force palette (this fixes "list exists but invisible")
+        pal = view.palette()
+        pal.setColor(QtGui.QPalette.Base, QtGui.QColor(IMT_WHITE))
+        pal.setColor(QtGui.QPalette.Window, QtGui.QColor(IMT_WHITE))
+        pal.setColor(QtGui.QPalette.Text, QtGui.QColor(IMT_BLACK))
+        pal.setColor(QtGui.QPalette.WindowText, QtGui.QColor(IMT_BLACK))
+        pal.setColor(QtGui.QPalette.Highlight, QtGui.QColor(IMT_CYAN))
+        pal.setColor(QtGui.QPalette.HighlightedText, QtGui.QColor(IMT_NAVY))
+        view.setPalette(pal)
+
+        # Ensure it behaves like a popup window
+        view.setWindowFlag(QtCore.Qt.Popup, True)
+
+        combo.setView(view)
+
+    # =========================
+    #   I18N helpers
+    # =========================
+
+    def tr(self, key: str) -> str:
+        return I18N.get(self.ui_lang, I18N["fr"]).get(key, key)
+
+    def toggle_lang(self):
+        self.ui_lang = "en" if self.ui_lang == "fr" else "fr"
+        self.lang_btn.setText(self.ui_lang.upper())
+        self.settings.setValue("ui/lang", self.ui_lang)
+        self.settings.sync()
+        self._apply_i18n()
+
+    def _apply_i18n(self):
+        self.setWindowTitle(self.tr("app_title"))
+        self.title_lbl.setText(self.tr("app_title"))
+        self.sub_lbl.setText(self.tr("app_sub"))
+
+        self.c_file.setTitle(self.tr("card_file"))
+        self.c_opts.setTitle(self.tr("card_options"))
+        self.c_actions.setTitle(self.tr("card_actions"))
+        self.c_logs.setTitle(self.tr("card_logs"))
+
+        self.hint.setText(self.tr("tip_exports"))
+
+        self.lbl_mode.setText(self.tr("lbl_mode"))
+        self.lbl_whisper_model.setText(self.tr("lbl_whisper_model"))
+        self.lbl_language.setText(self.tr("lbl_language"))
+        self.lbl_hf.setText(self.tr("lbl_hf_token"))
+
+        self.browse_btn.setText(self.tr("btn_browse"))
+        self.save_btn.setText(self.tr("btn_output"))
+        self.start_btn.setText(self.tr("btn_start"))
+        self.stop_btn.setText(self.tr("btn_stop"))
+        self.reset_btn.setText(self.tr("btn_reset"))
+        self.open_output_btn.setText(self.tr("btn_open_output"))
+
+        if self.proc.state() == QtCore.QProcess.NotRunning:
+            cur = self.status_pill.text().strip()
+            if cur in ("Ready", "Prêt"):
+                self._set_status(self.tr("status_ready"))
 
     # =============================
     #   Script capabilities detection
@@ -540,13 +888,9 @@ class Main(QtWidgets.QWidget):
         return SCRIPT_PATH
 
     def _get_script_help(self) -> str:
-        """
-        Fetches help via "python script -h".
-        Increased timeout because some scripts import heavy libs before argparse.
-        """
         sp = self._script_path()
         if not os.path.exists(sp):
-            self._log("[GUI] Script not found -> empty help")
+            self._log(self.tr("log_script_not_found"))
             return ""
 
         p = QtCore.QProcess()
@@ -554,30 +898,30 @@ class Main(QtWidgets.QWidget):
 
         p.start(sys.executable, [sp, "-h"])
         if not p.waitForStarted(3000):
-            self._log(f"[GUI] Help: process did not start (python={sys.executable})")
+            self._log(self.tr("log_help_start_fail").format(py=sys.executable))
             return ""
 
         if not p.waitForFinished(30000):
-            self._log("[GUI] Help: timeout -> kill()")
+            self._log(self.tr("log_help_timeout"))
             try:
                 p.kill()
             except Exception:
                 pass
 
         out = bytes(p.readAll()).decode("utf-8", "replace").strip()
-        self._log(f"[GUI] Help: exitCode={p.exitCode()} exitStatus={p.exitStatus()}")
+        self._log(self.tr("log_help_exit").format(code=p.exitCode(), status=p.exitStatus()))
         if not out:
-            self._log("[GUI] Help: captured empty output")
+            self._log(self.tr("log_help_empty"))
 
         return out
 
     def _detect_and_apply_script_capabilities(self):
         sp = self._script_path()
-        self._log(f"[GUI] Using script path = {sp}")
+        self._log(self.tr("log_using_script").format(sp=sp))
 
         help_txt = self._get_script_help()
         if not help_txt:
-            self._log("[GUI] Empty help -> cannot detect, keeping export options as-is.\n")
+            self._log(self.tr("log_empty_help"))
             return
 
         def supports(flag: str) -> bool:
@@ -588,11 +932,11 @@ class Main(QtWidgets.QWidget):
         self._set_export_enabled(self.export_vtt, supports("--vtt"), f"Option not supported by {os.path.basename(sp)}")
         self._set_export_enabled(self.subs_no_speaker, supports("--subs_no_speaker"), f"Option not supported by {os.path.basename(sp)}")
 
-        self._log("\n[GUI] Detected capabilities:")
-        self._log(f"  --json: {supports('--json')}")
-        self._log(f"  --srt: {supports('--srt')}")
-        self._log(f"  --vtt: {supports('--vtt')}")
-        self._log(f"  --subs_no_speaker: {supports('--subs_no_speaker')}\n")
+        self._log("\n" + self.tr("log_detected_caps"))
+        self._log(self.tr("log_caps_json").format(v=supports("--json")))
+        self._log(self.tr("log_caps_srt").format(v=supports("--srt")))
+        self._log(self.tr("log_caps_vtt").format(v=supports("--vtt")))
+        self._log(self.tr("log_caps_subs").format(v=supports("--subs_no_speaker")) + "\n")
 
     def _set_export_enabled(self, cb: QtWidgets.QCheckBox, enabled: bool, disabled_tip: str):
         cb.setEnabled(enabled)
@@ -646,6 +990,10 @@ class Main(QtWidgets.QWidget):
 
         self._refresh_open_button()
 
+        self.lang_btn.setText(self.ui_lang.upper())
+        self._apply_i18n()
+        self._set_status(self.tr("status_ready"))
+
     def _save_settings(self):
         self.settings.setValue("window/geometry", self.saveGeometry())
 
@@ -663,6 +1011,7 @@ class Main(QtWidgets.QWidget):
 
         self.settings.setValue("prefs/last_output_path", self.output_path.text().strip())
         self.settings.setValue("prefs/hf_token", self.hf_token.text().strip())
+        self.settings.setValue("ui/lang", self.ui_lang)
         self.settings.sync()
 
     def closeEvent(self, event):
@@ -679,8 +1028,8 @@ class Main(QtWidgets.QWidget):
     def reset_settings(self):
         resp = QtWidgets.QMessageBox.question(
             self,
-            "Réinitialiser",
-            "Réinitialiser tous les réglages et effacer les préférences sauvegardées ?",
+            self.tr("dlg_reset_title"),
+            self.tr("dlg_reset_body"),
             QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No,
             QtWidgets.QMessageBox.No,
         )
@@ -695,6 +1044,8 @@ class Main(QtWidgets.QWidget):
             self.settings.sync()
         except Exception:
             pass
+
+        self.settings.setValue("ui/lang", self.ui_lang)
 
         self.input_path.setText("")
         self.output_path.setText("")
@@ -720,8 +1071,8 @@ class Main(QtWidgets.QWidget):
         self.stop_btn.setEnabled(False)
         self.reset_btn.setEnabled(True)
         self.open_output_btn.setEnabled(False)
-        self._set_status("Ready")
-        self._log("↺ Settings reset.\n")
+        self._set_status(self.tr("status_ready"))
+        self._log(self.tr("log_reset_done"))
 
     # =========================
     #   UX: status / logs
@@ -735,7 +1086,11 @@ class Main(QtWidgets.QWidget):
         self.status_pill.setText(s)
 
     def _log(self, s: str):
-        self.console.appendPlainText(s.rstrip("\n"))
+        s = s.rstrip("\n")
+        if not s:
+            return
+        for line in s.splitlines():
+            self.console.appendPlainText(f"{_ts()} {line}")
         if self.auto_scroll.isChecked():
             cursor = self.console.textCursor()
             cursor.movePosition(QtGui.QTextCursor.End)
@@ -751,9 +1106,9 @@ class Main(QtWidgets.QWidget):
     def pick_input(self):
         path, _ = QtWidgets.QFileDialog.getOpenFileName(
             self,
-            "Choisir un fichier audio/vidéo",
+            self.tr("dlg_pick_input_title"),
             "",
-            "Audio/Vidéo (*.wav *.mp3 *.m4a *.aac *.flac *.ogg *.mp4 *.mkv *.mov *.avi *.webm);;Tous (*.*)",
+            self.tr("dlg_pick_input_filter"),
         )
         if path:
             self.set_input(path)
@@ -769,9 +1124,9 @@ class Main(QtWidgets.QWidget):
         suggested = self.output_path.text().strip() or "output.txt"
         path, _ = QtWidgets.QFileDialog.getSaveFileName(
             self,
-            "Choisir le fichier de sortie",
+            self.tr("dlg_pick_output_title"),
             suggested,
-            "TXT (*.txt);;Tous (*.*)",
+            self.tr("dlg_pick_output_filter"),
         )
         if path:
             self.output_path.setText(path)
@@ -780,7 +1135,7 @@ class Main(QtWidgets.QWidget):
     def open_output(self):
         outp = self.output_path.text().strip()
         if not outp or not os.path.exists(outp):
-            QtWidgets.QMessageBox.information(self, "Info", "Le fichier de sortie n'existe pas encore.")
+            QtWidgets.QMessageBox.information(self, self.tr("msg_info_title"), self.tr("msg_output_missing"))
             self._refresh_open_button()
             return
         QtGui.QDesktopServices.openUrl(QtCore.QUrl.fromLocalFile(outp))
@@ -795,11 +1150,11 @@ class Main(QtWidgets.QWidget):
         sp = self._script_path()
 
         if not os.path.exists(sp):
-            raise RuntimeError(f"Script introuvable: {sp}")
+            raise RuntimeError(self.tr("err_script_missing").format(sp=sp))
         if not inp or not os.path.exists(inp):
-            raise RuntimeError("Entrée invalide (fichier manquant).")
+            raise RuntimeError(self.tr("err_invalid_input"))
         if not outp:
-            raise RuntimeError("Sortie manquante.")
+            raise RuntimeError(self.tr("err_missing_output"))
 
         out_dir = os.path.dirname(outp)
         if out_dir and not os.path.exists(out_dir):
@@ -851,7 +1206,7 @@ class Main(QtWidgets.QWidget):
         try:
             args = self.build_args()
         except Exception as e:
-            QtWidgets.QMessageBox.critical(self, "Erreur", str(e))
+            QtWidgets.QMessageBox.critical(self, self.tr("msg_error_title"), str(e))
             return
 
         try:
@@ -864,28 +1219,28 @@ class Main(QtWidgets.QWidget):
         self.stop_btn.setEnabled(True)
         self.reset_btn.setEnabled(False)
         self.progress.setVisible(True)
-        self._set_status("Running…")
+        self._set_status(self.tr("status_running"))
 
         self._log("\n" + "=" * 72)
-        self._log("▶ Launch:")
+        self._log(self.tr("log_launch"))
         self._log(self._format_cmd_for_log(args))
 
         self.proc.start(args[0], args[1:])
         if not self.proc.waitForStarted(3000):
-            self._log("❌ Failed to start process.")
+            self._log(self.tr("log_failed_start"))
             self._restore_ui_after_run(error=True)
 
     def stop(self):
         if self.proc.state() == QtCore.QProcess.NotRunning:
             return
-        self._log("⏹ Stop requested…")
-        self._set_status("Stopping…")
+        self._log(self.tr("log_stop_requested"))
+        self._set_status(self.tr("status_stopping"))
         self.proc.terminate()
         QtCore.QTimer.singleShot(2500, self._kill_if_needed)
 
     def _kill_if_needed(self):
         if self.proc.state() != QtCore.QProcess.NotRunning:
-            self._log("⚠️ Process not responding -> kill()")
+            self._log(self.tr("log_kill"))
             self.proc.kill()
 
     def _restore_ui_after_run(self, error: bool):
@@ -893,7 +1248,7 @@ class Main(QtWidgets.QWidget):
         self.stop_btn.setEnabled(False)
         self.reset_btn.setEnabled(True)
         self.progress.setVisible(False)
-        self._set_status("Error" if error else "Done")
+        self._set_status(self.tr("status_error") if error else self.tr("status_done"))
         self._refresh_open_button()
 
     # =========================
@@ -907,10 +1262,10 @@ class Main(QtWidgets.QWidget):
                 self._log(line)
 
     def _proc_error(self, err: QtCore.QProcess.ProcessError):
-        self._log(f"❌ QProcess error: {err}")
+        self._log(self.tr("log_qprocess_error").format(err=err))
 
     def _finished(self, code, status):
-        self._log(f"\n✅ Finished (code={code}).")
+        self._log("\n" + self.tr("log_finished").format(code=code))
         self._restore_ui_after_run(error=(code != 0))
 
 
