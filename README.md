@@ -128,14 +128,30 @@ Diarization uses the model:
 pyannote/speaker-diarization-community-1
 ```
 
-Access to this model requires:
-- accepting its conditions on Hugging Face
-- a valid Hugging Face access token
+Speaker diarization relies on the Hugging Face model:
 
-The token can be provided via:
-- environment variables `HF_TOKEN` or `HUGGINGFACE_TOKEN`
-- CLI option `--hf_token`
-- interactive prompt (when running in a terminal)
+pyannote/speaker-diarization-community-1
+https://huggingface.co/pyannote/speaker-diarization-community-1
+
+To use this model, you must complete all of the following steps:
+	1.	Accept the model terms
+Visit the model page and accept its usage conditions:
+https://huggingface.co/pyannote/speaker-diarization-community-1
+	2.	Create a Hugging Face access token
+Go to the token settings page:
+https://huggingface.co/settings/tokens
+Create a new token with Read permissions.
+	3.	Export the token as an environment variable (recommended)
+macOS / Linux:
+HF_TOKEN=your_token_here
+Windows (PowerShell):
+$env:HF_TOKEN=“your_token_here”
+Using an environment variable is the safest method and avoids exposing the token in command history or scripts.
+	4.	Alternative methods (not recommended)
+The token can also be provided via:
+	•	the --hf_token CLI option
+	•	the interactive prompt (--ask_token)
+These methods are supported but exporting the token remains the preferred approach.
 
 ---
 
