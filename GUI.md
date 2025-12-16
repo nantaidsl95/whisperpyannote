@@ -52,18 +52,6 @@ In addition to the CLI dependencies, the GUI requires **PySide6**:
 pip install -r requirements-gui.txt
 ```
 
-All other requirements (Whisper, Pyannote, FFmpeg, etc.) are identical to the CLI version.
-
----
-
-### System requirement
-
-**FFmpeg must be installed and available in your system PATH.**
-
-The GUI relies on FFmpeg through the CLI script to:
-- extract audio from video files
-- convert audio to mono 16 kHz WAV
-
 ---
 
 ## 🔐 Hugging Face Token
