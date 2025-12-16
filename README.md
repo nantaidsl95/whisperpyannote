@@ -38,9 +38,7 @@ Thanks to their authors, maintainers, and contributors for making high-quality o
 - 📝 Whisper transcription  
 - 🗣️ Pyannote diarization  
 - 🧠 Smart merging of segments  
-- ⏳ Speaking time per speaker  
-- 📜 Clean final transcript  
-- 📈 Progress bars with tqdm  
+- ⏳ Speaking time per speaker
 - 🎬 Optional subtitle export (**SRT / VTT**)  
 - 📄 Optional structured output (**JSON**)  
 
