@@ -278,13 +278,15 @@ SPEAKER_01: 00:08:45
 
 ```
 whisperpyannote/
-├── whisperpyannote.py
-├── requirements.txt
-├── README.md
+├── .gitignore
+├── GUI.md
 ├── LICENSE
-└── .gitignore
+├── README.md
+├── requirements.txt
+├── requirements_gui.txt
+├── whisperpyannote.py
+└── whisperpyannote_gui.py
 ```
-
 ---
 
 ## 📄 License
