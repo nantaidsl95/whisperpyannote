@@ -18,6 +18,7 @@ import whisper
 from tqdm import tqdm
 from pyannote.audio import Pipeline
 import torchaudio
+import torch
 from torch.serialization import add_safe_globals
 from pyannote.audio.core.task import Specifications, Problem, Resolution
 
@@ -299,8 +300,9 @@ def get_hf_token(args) -> str:
 # =============================
 
 def load_whisper_model(whisper_model_choice: str):
-    print(f"\nChargement du modele Whisper '{whisper_model_choice}'...")
-    model = whisper.load_model(whisper_model_choice)
+    device = "cuda" if torch.cuda.is_available() else "cpu"
+    print(f"\nChargement du modele Whisper '{whisper_model_choice}' (device={device})...")
+    model = whisper.load_model(whisper_model_choice, device=device)
     return model
 
 
@@ -341,12 +343,23 @@ def run_diarization(audio_path: str, hf_token: str):
         print(e)
         sys.exit(1)
 
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    try:
+        pipeline.to(device)
+    except Exception:
+        pass
+
     try:
         waveform, sample_rate = torchaudio.load(audio_path)
     except Exception as e:
         print("ERREUR lors du chargement audio avec torchaudio :")
         print(e)
         sys.exit(1)
+
+    try:
+        waveform = waveform.to(device)
+    except Exception:
+        pass
 
     diarization = pipeline({"waveform": waveform, "sample_rate": sample_rate})
 
