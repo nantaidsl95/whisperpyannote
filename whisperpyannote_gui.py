@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-GUI PySide6 — Whisper + Pyannote (CLI driver)
+GUI PySide6 - Whisper + Pyannote (CLI driver)
 Auteur : marcdelage
 """
 
@@ -20,39 +20,37 @@ I18N = {
     "fr": {
         "app_title": "WhisperPyannote",
         "app_sub": "Transcription + Diarisation",
-        "status_ready": "Prêt",
-        "status_running": "En cours…",
-        "status_stopping": "Arrêt…",
-        "status_done": "Terminé",
+        "status_ready": "Pret",
+        "status_running": "En cours...",
+        "status_stopping": "Arret...",
+        "status_done": "Termine",
         "status_error": "Erreur",
-
         "card_file": "FICHIER",
         "card_options": "OPTIONS",
         "card_actions": "ACTIONS",
         "card_logs": "Logs",
+        "drop_title": "Glissez-deposez un fichier audio/video",
+        "drop_hint": 'ou cliquez sur "Parcourir..."',
 
-        "drop_title": "Glissez-déposez un fichier audio/vidéo",
-        "drop_hint": 'ou cliquez sur "Parcourir…"',
-
-        "btn_browse": "Parcourir…",
-        "btn_output": "Sortie…",
-        "btn_start": "▶ Démarrer",
-        "btn_stop": "⏹ Stop",
-        "btn_reset": "↺ Réinitialiser",
+        "btn_browse": "Parcourir...",
+        "btn_output": "Sortie...",
+        "btn_start": "Demarrer",
+        "btn_stop": "Stop",
+        "btn_reset": "Reinitialiser",
         "btn_open_output": "Ouvrir la sortie",
 
         "lbl_mode": "Mode",
-        "lbl_whisper_model": "Modèle Whisper",
+        "lbl_whisper_model": "Modele Whisper",
         "lbl_language": "Langue",
         "lbl_hf_token": "Token HF",
 
-        "tip_exports": "Astuce : SRT/VTT/JSON sont générés en plus du .txt",
+        "tip_exports": "Astuce : SRT/VTT/JSON sont generes en plus du .txt",
 
-        "dlg_reset_title": "Réinitialiser",
-        "dlg_reset_body": "Réinitialiser tous les réglages et effacer les préférences sauvegardées ?",
+        "dlg_reset_title": "Reinitialiser",
+        "dlg_reset_body": "Reinitialiser tous les reglages et effacer les preferences sauvegardees ?",
 
-        "dlg_pick_input_title": "Choisir un fichier audio/vidéo",
-        "dlg_pick_input_filter": "Audio/Vidéo (*.wav *.mp3 *.m4a *.aac *.flac *.ogg *.mp4 *.mkv *.mov *.avi *.webm);;Tous (*.*)",
+        "dlg_pick_input_title": "Choisir un fichier audio/video",
+        "dlg_pick_input_filter": "Audio/Video (*.wav *.mp3 *.m4a *.aac *.flac *.ogg *.mp4 *.mkv *.mov *.avi *.webm);;Tous (*.*)",
         "dlg_pick_output_title": "Choisir le fichier de sortie",
         "dlg_pick_output_filter": "TXT (*.txt);;Tous (*.*)",
 
@@ -61,16 +59,16 @@ I18N = {
         "msg_output_missing": "Le fichier de sortie n'existe pas encore.",
 
         "err_script_missing": "Script introuvable : {sp}",
-        "err_invalid_input": "Entrée invalide (fichier manquant).",
+        "err_invalid_input": "Entree invalide (fichier manquant).",
         "err_missing_output": "Sortie manquante.",
 
-        "log_ready": "Prêt.\n",
-        "log_reset_done": "↺ Réglages réinitialisés.\n",
-        "log_stop_requested": "⏹ Arrêt demandé…",
-        "log_kill": "⚠️ Process not responding -> kill()",
-        "log_failed_start": "❌ Failed to start process.",
-        "log_finished": "✅ Terminé (code={code}).",
-        "log_launch": "▶ Lancement:",
+        "log_ready": "Pret.\n",
+        "log_reset_done": "Reglages reinitialises.\n",
+        "log_stop_requested": "Arret demande...",
+        "log_kill": "ATTENTION Process not responding -> kill()",
+        "log_failed_start": "ERREUR Failed to start process.",
+        "log_finished": "OK Termine (code={code}).",
+        "log_launch": "> Lancement:",
         "log_script_not_found": "[GUI] Script introuvable -> empty help",
         "log_help_start_fail": "[GUI] Help: process did not start (python={py})",
         "log_help_timeout": "[GUI] Help: timeout -> kill()",
@@ -83,30 +81,46 @@ I18N = {
         "log_caps_srt": "  --srt: {v}",
         "log_caps_vtt": "  --vtt: {v}",
         "log_caps_subs": "  --subs_no_speaker: {v}",
-        "log_qprocess_error": "❌ QProcess error: {err}",
+        "log_qprocess_error": "ERREUR QProcess error: {err}",
+
+        # --- Missing translations (UI) ---
+        "ph_no_file": "Aucun fichier selectionne",
+        "ph_output": "Chemin de sortie... (ex: C:\\chemin\\sortie.txt)",
+        "ph_hf_token": "Token Hugging Face (pour Pyannote)",
+
+        "mode_full": "Transcription + Diarisation",
+        "mode_transcription_only": "Transcription",
+        "mode_diarization_only": "Diarisation",
+
+        "cb_keep_temp": "Conserver les fichiers temporaires",
+        "cb_auto_scroll": "Defilement auto des logs",
+        "cb_json": "JSON",
+        "cb_srt": "SRT",
+        "cb_vtt": "VTT",
+        "cb_subs_no_speaker": "Sous-titres sans nom de speaker",
+
+        "tip_opt_not_supported": "Option non supportee par {script}",
     },
     "en": {
         "app_title": "WhisperPyannote",
         "app_sub": "Transcription + Diarization",
         "status_ready": "Ready",
-        "status_running": "Running…",
-        "status_stopping": "Stopping…",
+        "status_running": "Running...",
+        "status_stopping": "Stopping...",
         "status_done": "Done",
         "status_error": "Error",
-
         "card_file": "FILE",
         "card_options": "OPTIONS",
         "card_actions": "ACTIONS",
         "card_logs": "Logs",
-
         "drop_title": "Drag & drop an audio/video file",
-        "drop_hint": 'or click "Browse…"',
+        "drop_hint": 'or click "Browse..."',
 
-        "btn_browse": "Browse…",
-        "btn_output": "Output…",
-        "btn_start": "▶ Start",
-        "btn_stop": "⏹ Stop",
-        "btn_reset": "↺ Reset",
+        "btn_browse": "Browse...",
+        "btn_output": "Output...",
+        "btn_start": "Start",
+        "btn_stop": "Stop",
+        "btn_reset": "Reset",
         "btn_open_output": "Open output",
 
         "lbl_mode": "Mode",
@@ -133,12 +147,12 @@ I18N = {
         "err_missing_output": "Missing output.",
 
         "log_ready": "Ready.\n",
-        "log_reset_done": "↺ Settings reset.\n",
-        "log_stop_requested": "⏹ Stop requested…",
-        "log_kill": "⚠️ Process not responding -> kill()",
-        "log_failed_start": "❌ Failed to start process.",
-        "log_finished": "✅ Finished (code={code}).",
-        "log_launch": "▶ Launch:",
+        "log_reset_done": "Settings reset.\n",
+        "log_stop_requested": "Stop requested...",
+        "log_kill": "ATTENTION Process not responding -> kill()",
+        "log_failed_start": "ERREUR Failed to start process.",
+        "log_finished": "OK Finished (code={code}).",
+        "log_launch": "> Launch:",
         "log_script_not_found": "[GUI] Script not found -> empty help",
         "log_help_start_fail": "[GUI] Help: process did not start (python={py})",
         "log_help_timeout": "[GUI] Help: timeout -> kill()",
@@ -151,7 +165,25 @@ I18N = {
         "log_caps_srt": "  --srt: {v}",
         "log_caps_vtt": "  --vtt: {v}",
         "log_caps_subs": "  --subs_no_speaker: {v}",
-        "log_qprocess_error": "❌ QProcess error: {err}",
+        "log_qprocess_error": "ERREUR QProcess error: {err}",
+
+        # --- Missing translations (UI) ---
+        "ph_no_file": "No file selected",
+        "ph_output": "Output path... (e.g. /path/output.txt)",
+        "ph_hf_token": "Hugging Face token (for Pyannote)",
+
+        "mode_full": "Transcription + Diarization",
+        "mode_transcription_only": "Transcription",
+        "mode_diarization_only": "Diarization",
+
+        "cb_keep_temp": "Keep temporary files",
+        "cb_auto_scroll": "Auto-scroll logs",
+        "cb_json": "JSON",
+        "cb_srt": "SRT",
+        "cb_vtt": "VTT",
+        "cb_subs_no_speaker": "Subtitles without speaker labels",
+
+        "tip_opt_not_supported": "Option not supported by {script}",
     },
 }
 
@@ -309,23 +341,23 @@ def apply_imt_theme(app: QtWidgets.QApplication):
         background: {IMT_LIGHT};
     }}
 
-    /* (On garde ce style, mais le FIX principal est côté Python via setView + palette) */
-    QListView#ComboPopup {{
+    /* FIX: popup list visibility (text + background + hover/selected) */
+    QAbstractItemView {{
         background: {IMT_WHITE};
         color: {IMT_BLACK};
         border: 1px solid {IMT_NAVY};
         outline: 0;
     }}
-    QListView#ComboPopup::item {{
+    QAbstractItemView::item {{
         padding: 6px 10px;
         background: {IMT_WHITE};
         color: {IMT_BLACK};
     }}
-    QListView#ComboPopup::item:hover {{
+    QAbstractItemView::item:hover {{
         background: {IMT_LIGHT};
         color: {IMT_BLACK};
     }}
-    QListView#ComboPopup::item:selected {{
+    QAbstractItemView::item:selected {{
         background: {IMT_CYAN};
         color: {IMT_NAVY};
     }}
@@ -477,6 +509,42 @@ def apply_imt_theme(app: QtWidgets.QApplication):
     app.setStyleSheet(qss)
 
 
+def fix_combo_popup(combo: QtWidgets.QComboBox):
+    view = QtWidgets.QListView(combo)
+    view.setUniformItemSizes(True)
+
+    view.setStyleSheet(f"""
+        QListView {{
+            background: {IMT_WHITE};
+            color: {IMT_BLACK};
+            border: 1px solid {IMT_NAVY};
+            outline: 0;
+        }}
+        QListView::item {{
+            padding: 6px 10px;
+            background: {IMT_WHITE};
+            color: {IMT_BLACK};
+        }}
+        QListView::item:hover {{
+            background: {IMT_LIGHT};
+            color: {IMT_BLACK};
+        }}
+        QListView::item:selected {{
+            background: {IMT_CYAN};
+            color: {IMT_NAVY};
+        }}
+    """)
+
+    pal = view.palette()
+    pal.setColor(QtGui.QPalette.Base, QtGui.QColor(IMT_WHITE))
+    pal.setColor(QtGui.QPalette.Text, QtGui.QColor(IMT_BLACK))
+    pal.setColor(QtGui.QPalette.Highlight, QtGui.QColor(IMT_CYAN))
+    pal.setColor(QtGui.QPalette.HighlightedText, QtGui.QColor(IMT_NAVY))
+    view.setPalette(pal)
+
+    combo.setView(view)
+
+
 # =========================
 #   Drop zone widget
 # =========================
@@ -496,9 +564,9 @@ class DropZone(QtWidgets.QFrame):
         lay.setContentsMargins(16, 16, 16, 16)
         lay.setSpacing(6)
 
-        icon = QtWidgets.QLabel("⬇︎")
+        icon = QtWidgets.QLabel("⬇")
         icon.setAlignment(QtCore.Qt.AlignCenter)
-        icon.setStyleSheet(f"font-size: 22px; color: {IMT_CYAN}; font-weight: 900;")
+        icon.setStyleSheet(f"font-size: 48px; color: {IMT_CYAN}; font-weight: 900;")
 
         self.title_lbl = QtWidgets.QLabel("")
         self.title_lbl.setObjectName("DropTitle")
@@ -600,40 +668,48 @@ class Main(QtWidgets.QWidget):
         tv.setContentsMargins(10, 8, 10, 8)
         tv.setSpacing(2)
 
-        self.title_lbl = QtWidgets.QLabel(self.tr("app_title"))
-        self.title_lbl.setObjectName("HeaderTitle")
-        self.sub_lbl = QtWidgets.QLabel(self.tr("app_sub"))
-        self.sub_lbl.setObjectName("HeaderSub")
-        tv.addWidget(self.title_lbl)
-        tv.addWidget(self.sub_lbl)
-
-        self.status_pill = QtWidgets.QLabel(self.tr("status_ready"))
-        self.status_pill.setObjectName("StatusPill")
-
         self.lang_btn = QtWidgets.QPushButton(self.ui_lang.upper())
         self.lang_btn.setObjectName("LangToggle")
         self.lang_btn.setFixedWidth(62)
         self.lang_btn.clicked.connect(self.toggle_lang)
 
+        title_row = QtWidgets.QHBoxLayout()
+        title_row.setContentsMargins(0, 0, 0, 0)
+        title_row.setSpacing(10)
+
+        self.title_lbl = QtWidgets.QLabel(self.tr("app_title"))
+        self.title_lbl.setObjectName("HeaderTitle")
+        title_row.addWidget(self.title_lbl, 0, QtCore.Qt.AlignVCenter)
+        title_row.addWidget(self.lang_btn, 0, QtCore.Qt.AlignVCenter)
+        title_row.addStretch(1)
+
+        self.sub_lbl = QtWidgets.QLabel(self.tr("app_sub"))
+        self.sub_lbl.setObjectName("HeaderSub")
+
+        tv.addLayout(title_row)
+        tv.addWidget(self.sub_lbl)
+
+        self.status_pill = QtWidgets.QLabel(self.tr("status_ready"))
+        self.status_pill.setObjectName("StatusPill")
+
         hl.addWidget(header_text)
         hl.addStretch(1)
-        hl.addWidget(self.lang_btn)
         hl.addWidget(self.status_pill)
 
         # ----- Widgets -----
         self.input_path = QtWidgets.QLineEdit()
         self.input_path.setReadOnly(True)
-        self.input_path.setPlaceholderText("No file selected")
+        self.input_path.setPlaceholderText(self.tr("ph_no_file"))
         self.input_path.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed)
 
         self.output_path = QtWidgets.QLineEdit()
-        self.output_path.setPlaceholderText("Output path… (e.g. /path/output.txt)")
+        self.output_path.setPlaceholderText(self.tr("ph_output"))
         self.output_path.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed)
 
         self.mode = QtWidgets.QComboBox()
-        self.mode.addItem("Transcription + Diarization", "full")
-        self.mode.addItem("Transcription", "transcription_only")
-        self.mode.addItem("Diarization", "diarization_only")
+        self.mode.addItem(self.tr("mode_full"), "full")
+        self.mode.addItem(self.tr("mode_transcription_only"), "transcription_only")
+        self.mode.addItem(self.tr("mode_diarization_only"), "diarization_only")
 
         self.whisper_model = QtWidgets.QComboBox()
         self.whisper_model.addItem("Tiny", "tiny")
@@ -647,23 +723,22 @@ class Main(QtWidgets.QWidget):
         for label, code in WHISPER_LANG_CHOICES:
             self.lang.addItem(label, code)
 
-        # ✅ FIX robuste: forcer view + palette pour rendre le popup visible partout
-        self._force_combo_popup_visible(self.mode)
-        self._force_combo_popup_visible(self.whisper_model)
-        self._force_combo_popup_visible(self.lang)
+        fix_combo_popup(self.mode)
+        fix_combo_popup(self.whisper_model)
+        fix_combo_popup(self.lang)
 
         self.hf_token = QtWidgets.QLineEdit()
         self.hf_token.setEchoMode(QtWidgets.QLineEdit.Password)
-        self.hf_token.setPlaceholderText("Hugging Face token (for Pyannote)")
+        self.hf_token.setPlaceholderText(self.tr("ph_hf_token"))
 
-        self.keep_temp = QtWidgets.QCheckBox("Keep temporary files")
-        self.auto_scroll = QtWidgets.QCheckBox("Auto-scroll logs")
+        self.keep_temp = QtWidgets.QCheckBox(self.tr("cb_keep_temp"))
+        self.auto_scroll = QtWidgets.QCheckBox(self.tr("cb_auto_scroll"))
         self.auto_scroll.setChecked(True)
 
-        self.export_json = QtWidgets.QCheckBox("JSON")
-        self.export_srt = QtWidgets.QCheckBox("SRT")
-        self.export_vtt = QtWidgets.QCheckBox("VTT")
-        self.subs_no_speaker = QtWidgets.QCheckBox("Subtitles without speaker labels")
+        self.export_json = QtWidgets.QCheckBox(self.tr("cb_json"))
+        self.export_srt = QtWidgets.QCheckBox(self.tr("cb_srt"))
+        self.export_vtt = QtWidgets.QCheckBox(self.tr("cb_vtt"))
+        self.subs_no_speaker = QtWidgets.QCheckBox(self.tr("cb_subs_no_speaker"))
 
         self.browse_btn = QtWidgets.QPushButton(self.tr("btn_browse"))
         self.browse_btn.setObjectName("Ghost")
@@ -809,35 +884,6 @@ class Main(QtWidgets.QWidget):
         self._log(self.tr("log_ready"))
 
     # =========================
-    #   Combo popup hard-fix
-    # =========================
-
-    def _force_combo_popup_visible(self, combo: QtWidgets.QComboBox):
-        # Force a dedicated QListView so the popup is not "weird" on some platforms/styles
-        view = QtWidgets.QListView()
-        view.setObjectName("ComboPopup")
-        view.setUniformItemSizes(True)
-        view.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
-        view.setSelectionMode(QtWidgets.QAbstractItemView.SingleSelection)
-        view.setVerticalScrollMode(QtWidgets.QAbstractItemView.ScrollPerPixel)
-        view.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
-
-        # Force palette (this fixes "list exists but invisible")
-        pal = view.palette()
-        pal.setColor(QtGui.QPalette.Base, QtGui.QColor(IMT_WHITE))
-        pal.setColor(QtGui.QPalette.Window, QtGui.QColor(IMT_WHITE))
-        pal.setColor(QtGui.QPalette.Text, QtGui.QColor(IMT_BLACK))
-        pal.setColor(QtGui.QPalette.WindowText, QtGui.QColor(IMT_BLACK))
-        pal.setColor(QtGui.QPalette.Highlight, QtGui.QColor(IMT_CYAN))
-        pal.setColor(QtGui.QPalette.HighlightedText, QtGui.QColor(IMT_NAVY))
-        view.setPalette(pal)
-
-        # Ensure it behaves like a popup window
-        view.setWindowFlag(QtCore.Qt.Popup, True)
-
-        combo.setView(view)
-
-    # =========================
     #   I18N helpers
     # =========================
 
@@ -875,9 +921,24 @@ class Main(QtWidgets.QWidget):
         self.reset_btn.setText(self.tr("btn_reset"))
         self.open_output_btn.setText(self.tr("btn_open_output"))
 
+        self.input_path.setPlaceholderText(self.tr("ph_no_file"))
+        self.output_path.setPlaceholderText(self.tr("ph_output"))
+        self.hf_token.setPlaceholderText(self.tr("ph_hf_token"))
+
+        self.keep_temp.setText(self.tr("cb_keep_temp"))
+        self.auto_scroll.setText(self.tr("cb_auto_scroll"))
+        self.export_json.setText(self.tr("cb_json"))
+        self.export_srt.setText(self.tr("cb_srt"))
+        self.export_vtt.setText(self.tr("cb_vtt"))
+        self.subs_no_speaker.setText(self.tr("cb_subs_no_speaker"))
+
+        self.mode.setItemText(0, self.tr("mode_full"))
+        self.mode.setItemText(1, self.tr("mode_transcription_only"))
+        self.mode.setItemText(2, self.tr("mode_diarization_only"))
+
         if self.proc.state() == QtCore.QProcess.NotRunning:
             cur = self.status_pill.text().strip()
-            if cur in ("Ready", "Prêt"):
+            if cur in ("Ready", "Pret"):
                 self._set_status(self.tr("status_ready"))
 
     # =============================
@@ -927,10 +988,11 @@ class Main(QtWidgets.QWidget):
         def supports(flag: str) -> bool:
             return (flag in help_txt) or (f"{flag}]" in help_txt) or (f"{flag} " in help_txt)
 
-        self._set_export_enabled(self.export_json, supports("--json"), f"Option not supported by {os.path.basename(sp)}")
-        self._set_export_enabled(self.export_srt, supports("--srt"), f"Option not supported by {os.path.basename(sp)}")
-        self._set_export_enabled(self.export_vtt, supports("--vtt"), f"Option not supported by {os.path.basename(sp)}")
-        self._set_export_enabled(self.subs_no_speaker, supports("--subs_no_speaker"), f"Option not supported by {os.path.basename(sp)}")
+        tip = self.tr("tip_opt_not_supported").format(script=os.path.basename(sp))
+        self._set_export_enabled(self.export_json, supports("--json"), tip)
+        self._set_export_enabled(self.export_srt, supports("--srt"), tip)
+        self._set_export_enabled(self.export_vtt, supports("--vtt"), tip)
+        self._set_export_enabled(self.subs_no_speaker, supports("--subs_no_speaker"), tip)
 
         self._log("\n" + self.tr("log_detected_caps"))
         self._log(self.tr("log_caps_json").format(v=supports("--json")))
@@ -1161,7 +1223,7 @@ class Main(QtWidgets.QWidget):
             try:
                 os.makedirs(out_dir, exist_ok=True)
             except Exception as e:
-                raise RuntimeError(f"Impossible de créer le dossier de sortie: {out_dir}\n{e}")
+                raise RuntimeError(f"Impossible de creer le dossier de sortie: {out_dir}\n{e}")
 
         args = [sys.executable, sp, inp, outp]
 
