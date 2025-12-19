@@ -1158,8 +1158,23 @@ class Main(QtWidgets.QWidget):
             cursor.movePosition(QtGui.QTextCursor.End)
             self.console.setTextCursor(cursor)
 
+    # =========================
+    #   ONLY CHANGE: hide --hf_token value in logs
+    # =========================
     def _format_cmd_for_log(self, args):
-        return " ".join(shlex.quote(a) for a in args)
+        masked = []
+        skip_next = False
+        for a in args:
+            if skip_next:
+                masked.append("******")
+                skip_next = False
+                continue
+            if a == "--hf_token":
+                masked.append(a)
+                skip_next = True
+            else:
+                masked.append(a)
+        return " ".join(shlex.quote(a) for a in masked)
 
     # =========================
     #   File pickers
