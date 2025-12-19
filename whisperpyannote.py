@@ -31,7 +31,7 @@ def run_command(command):
     try:
         subprocess.run(command, check=True)
     except subprocess.CalledProcessError as e:
-        print(f"❌ Erreur lors de l'exécution de la commande : {e}")
+        print(f"ERREUR lors de l'execution de la commande : {e}")
         sys.exit(1)
 
 
@@ -47,14 +47,14 @@ def extract_audio(video_path: str) -> str:
     with tempfile.NamedTemporaryFile(delete=False, suffix=".wav") as tmpfile:
         audio_output = tmpfile.name
 
-    print("🎥 Extraction audio depuis la vidéo...")
+    print("Extraction audio depuis la video...")
     run_command([
         "ffmpeg", "-i", video_path,
         "-ac", "1", "-ar", "16000",
         "-vn", "-y",
         audio_output
     ])
-    print(f"✅ Audio extrait : {audio_output}")
+    print(f"OK Audio extrait : {audio_output}")
     return audio_output
 
 
@@ -72,14 +72,14 @@ def convert_audio(audio_path: str) -> str:
     with tempfile.NamedTemporaryFile(delete=False, suffix=".wav") as tmpfile:
         converted_audio = tmpfile.name
 
-    print("🔄 Conversion de l'audio au format 16kHz mono...")
+    print("Conversion de l'audio au format 16kHz mono...")
     run_command([
         "ffmpeg", "-i", audio_path,
         "-ac", "1", "-ar", "16000",
         "-y",
         converted_audio
     ])
-    print(f"✅ Audio converti : {converted_audio}")
+    print(f"OK Audio converti : {converted_audio}")
     return converted_audio
 
 
@@ -107,7 +107,7 @@ def _smart_join(a: str, b: str) -> str:
         return (b or "").strip()
     if not b:
         return a.strip()
-    sep = "" if a.endswith(("—", "-", "…", ":", "(", "[", "{", "/")) else " "
+    sep = "" if a.endswith(("—", "-", "...", ":", "(", "[", "{", "/")) else " "
     j = (a.rstrip() + sep + b.lstrip())
     j = re.sub(r"\s+([,.?!;:])", r"\1", j)
     j = re.sub(r"\s{2,}", " ", j)
@@ -173,7 +173,7 @@ def write_json_if_requested(args, output_file: str, payload: dict):
     out_json = json_path_for_output(output_file)
     with open(out_json, "w", encoding="utf-8") as f:
         json.dump(payload, f, ensure_ascii=False, indent=2)
-    print(f"\n✅ JSON sauvegardé dans : {out_json}")
+    print(f"\nOK JSON sauvegarde dans : {out_json}")
 
 
 def replace_ext(path: str, new_ext: str) -> str:
@@ -232,7 +232,7 @@ def write_srt(segments, out_path: str, include_speaker: bool = True):
             f.write(f"{start} --> {end}\n")
             f.write(f"{text}\n\n")
             idx += 1
-    print(f"\n✅ SRT sauvegardé dans : {out_path}")
+    print(f"\nOK SRT sauvegarde dans : {out_path}")
 
 
 def write_vtt(segments, out_path: str, include_speaker: bool = True):
@@ -248,7 +248,7 @@ def write_vtt(segments, out_path: str, include_speaker: bool = True):
                 text = f"{seg['speaker']}: {text}"
             f.write(f"{start} --> {end}\n")
             f.write(f"{text}\n\n")
-    print(f"\n✅ VTT sauvegardé dans : {out_path}")
+    print(f"\nOK VTT sauvegarde dans : {out_path}")
 
 
 def write_subtitles_if_requested(args, output_file: str, segments, include_speaker: bool = True):
@@ -276,21 +276,21 @@ def get_hf_token(args) -> str:
         return args.hf_token.strip()
 
     if args.ask_token and not sys.stdin.isatty():
-        print("❌ --ask_token demandé mais impossible de lire depuis stdin (mode non interactif).")
+        print("ERREUR --ask_token demande mais impossible de lire depuis stdin (mode non interactif).")
         sys.exit(1)
 
     if sys.stdin.isatty():
         try:
-            token = input("🔑 Aucun token Hugging Face détecté. Entrez votre token : ").strip()
+            token = input("Aucun token Hugging Face detecte. Entrez votre token : ").strip()
         except EOFError:
             token = ""
         if token:
             return token
-        print("❌ Aucun token saisi.")
+        print("ERREUR Aucun token saisi.")
         sys.exit(1)
 
-    print("🔎 Aucun token Hugging Face disponible (ni variable d'environnement, ni CLI, ni saisie interactive possible).")
-    print("   Veuillez définir HF_TOKEN ou HUGGINGFACE_TOKEN, ou utiliser --hf_token.")
+    print("INFO Aucun token Hugging Face disponible (ni variable d'environnement, ni CLI, ni saisie interactive possible).")
+    print("     Veuillez definir HF_TOKEN ou HUGGINGFACE_TOKEN, ou utiliser --hf_token.")
     sys.exit(1)
 
 
@@ -299,17 +299,17 @@ def get_hf_token(args) -> str:
 # =============================
 
 def load_whisper_model(whisper_model_choice: str):
-    print(f"\n🎙️ Chargement du modèle Whisper '{whisper_model_choice}'...")
+    print(f"\nChargement du modele Whisper '{whisper_model_choice}'...")
     model = whisper.load_model(whisper_model_choice)
     return model
 
 
 def run_whisper_transcription(model, audio_path: str, language: str = None):
-    print("📝 Transcription en cours... (cela peut prendre un moment)")
+    print("Transcription en cours... (cela peut prendre un moment)")
     transcribe_kwargs = {}
     if language:
         transcribe_kwargs["language"] = language
-        print(f"🌐 Langue forcée pour Whisper : {language}")
+        print(f"Langue forcee pour Whisper : {language}")
 
     result = model.transcribe(audio_path, **transcribe_kwargs)
     return result
@@ -323,11 +323,11 @@ def prepare_safe_globals():
     try:
         add_safe_globals([Specifications, Problem, Resolution])
     except Exception as e:
-        print("⚠️ Impossible d'ajouter Specifications/Problem/Resolution aux safe_globals :", e)
+        print("ATTENTION Impossible d'ajouter Specifications/Problem/Resolution aux safe_globals :", e)
 
 
 def run_diarization(audio_path: str, hf_token: str):
-    print("\n🗣️ Diarisation avec Pyannote en cours...")
+    print("\nDiarisation avec Pyannote en cours...")
 
     prepare_safe_globals()
 
@@ -337,14 +337,14 @@ def run_diarization(audio_path: str, hf_token: str):
             token=hf_token,
         )
     except Exception as e:
-        print("❌ Erreur lors du chargement de la pipeline pyannote/speaker-diarization-community-1 :")
+        print("ERREUR lors du chargement de la pipeline pyannote/speaker-diarization-community-1 :")
         print(e)
         sys.exit(1)
 
     try:
         waveform, sample_rate = torchaudio.load(audio_path)
     except Exception as e:
-        print("❌ Erreur lors du chargement audio avec torchaudio :")
+        print("ERREUR lors du chargement audio avec torchaudio :")
         print(e)
         sys.exit(1)
 
@@ -361,7 +361,7 @@ def run_diarization(audio_path: str, hf_token: str):
             "end": segment.end,
         })
 
-    print(f"✅ {len(speaker_segments)} segments de speakers détectés.")
+    print(f"OK {len(speaker_segments)} segments de speakers detectes.")
     return speaker_segments, waveform, sample_rate
 
 
@@ -458,7 +458,7 @@ def main():
     diarization_only = args.diarization_only
 
     if not os.path.exists(input_path):
-        print(f"⚠️ Fichier introuvable : {input_path}")
+        print(f"ATTENTION Fichier introuvable : {input_path}")
         sys.exit(1)
 
     original_input_path = input_path
@@ -467,7 +467,7 @@ def main():
     source_name = os.path.basename(original_input_path)
     language_label = language if language else "auto-détection"
     header = (
-        "📄 Métadonnées de transcription\n"
+        "Metadonnees de transcription\n"
         f"- Fichier source : {source_name}\n"
         f"- Modèle Whisper : {whisper_model_choice}\n"
         f"- Langue Whisper : {language_label}\n"
@@ -515,9 +515,9 @@ def main():
     #   MODE TRANSCRIPTION SEULE
     # =========================
     if transcription_only and not diarization_only:
-        print("\n📝 Mode : TRANSCRIPTION SEULE (pas de diarisation).")
+        print("\nMode : TRANSCRIPTION SEULE (pas de diarisation).")
 
-        print("\n📜 Aperçu de la transcription :")
+        print("\nApercu de la transcription :")
         for seg in (transcript_segments or [])[:10]:
             print(f"[{format_time(seg['start'])} - {format_time(seg['end'])}] {seg['text']}")
         if transcript_segments and len(transcript_segments) > 10:
@@ -525,14 +525,14 @@ def main():
 
         with open(output_file, "w", encoding="utf-8") as f:
             f.write(header)
-            f.write("📜 Transcription (sans diarisation) :\n\n")
+            f.write("Transcription (sans diarisation) :\n\n")
             if not transcript_segments:
                 f.write("(Aucun segment de transcription.)\n")
             else:
                 for t in transcript_segments:
-                    f.write(f"[{hhmmss(float(t['start']))}–{hhmmss(float(t['end']))}] {t.get('text', '').strip()}\n")
+                    f.write(f"[{hhmmss(float(t['start']))}-{hhmmss(float(t['end']))}] {t.get('text', '').strip()}\n")
 
-        print(f"\n✅ Transcription sauvegardée dans : {output_file}")
+        print(f"\nOK Transcription sauvegardee dans : {output_file}")
 
         # Sous-titres (basés sur Whisper)
         subs_segments = [
@@ -556,15 +556,15 @@ def main():
         }
         write_json_if_requested(args, output_file, json_payload)
 
-        print(f"\n📊 Résumé global :")
-        print(f"- Durée totale de l'audio analysé : {str(datetime.timedelta(seconds=int(audio_total_duration)))}")
+        print(f"\nResume global :")
+        print(f"- Duree totale de l'audio analyse : {str(datetime.timedelta(seconds=int(audio_total_duration)))}")
         print(f"- Nombre de segments de transcription : {len(transcript_segments) if transcript_segments else 0}")
 
     # =========================
     #   MODE DIARISATION SEULE
     # =========================
     elif diarization_only and not transcription_only:
-        print("\n🗣️ Mode : DIARISATION SEULE (pas de transcription Whisper).")
+        print("\nMode : DIARISATION SEULE (pas de transcription Whisper).")
 
         speaker_durations = {}
         for s in speaker_segments:
@@ -575,34 +575,34 @@ def main():
             for speaker, duration in speaker_durations.items()
         }
 
-        print("\n⏳ Temps de parole par speaker :")
+        print("\nTemps de parole par speaker :")
         for speaker, duration in speaker_durations_formatted.items():
-            print(f"🗣️ Speaker {speaker}: {duration}")
+            print(f"Speaker {speaker}: {duration}")
 
-        print("\n📜 Aperçu des segments de diarisation (sans texte) :")
+        print("\nApercu des segments de diarisation (sans texte) :")
         for seg in speaker_segments[:10]:
-            print(f"[{hhmmss(seg['start'])}–{hhmmss(seg['end'])}] {seg['speaker']}")
+            print(f"[{hhmmss(seg['start'])}-{hhmmss(seg['end'])}] {seg['speaker']}")
         if len(speaker_segments) > 10:
             print("... (voir fichier pour le reste)")
 
         with open(output_file, "w", encoding="utf-8") as f:
             f.write(header)
-            f.write("⏳ Temps de parole par speaker :\n")
+            f.write("Temps de parole par speaker :\n")
             for speaker, duration in speaker_durations_formatted.items():
-                f.write(f"🗣️ Speaker {speaker}: {duration}\n")
+                f.write(f"Speaker {speaker}: {duration}\n")
 
-            f.write("\n📜 Segments de diarisation (sans transcription) :\n\n")
+            f.write("\nSegments de diarisation (sans transcription) :\n\n")
             if not speaker_segments:
                 f.write("(Aucun segment de diarisation.)\n")
             else:
                 for s in speaker_segments:
-                    f.write(f"[{hhmmss(s['start'])}–{hhmmss(s['end'])}] {s['speaker']}\n")
+                    f.write(f"[{hhmmss(s['start'])}-{hhmmss(s['end'])}] {s['speaker']}\n")
 
-        print(f"\n✅ Diarisation sauvegardée dans : {output_file}")
+        print(f"\nOK Diarisation sauvegardee dans : {output_file}")
 
         # Pas de SRT/VTT possible ici (pas de texte)
         if args.srt or args.vtt:
-            print("\n⚠️ SRT/VTT non générés en mode diarisation seule (pas de transcription/texte).")
+            print("\nATTENTION SRT/VTT non generes en mode diarisation seule (pas de transcription/texte).")
 
         json_payload = {
             "meta": {**json_meta, "mode": "diarization_only", "audio_duration_seconds": audio_total_duration},
@@ -626,24 +626,24 @@ def main():
         total_speech_duration = sum(speaker_durations.values())
         average_duration = total_speech_duration / len(speaker_durations) if speaker_durations else 0.0
 
-        print(f"\n📊 Résumé global :")
-        print(f"- Durée totale de l'audio analysé : {str(datetime.timedelta(seconds=int(audio_total_duration)))}")
-        print(f"- Somme des temps de parole (tous speakers cumulés) : {str(datetime.timedelta(seconds=int(total_speech_duration)))}")
+        print(f"\nResume global :")
+        print(f"- Duree totale de l'audio analyse : {str(datetime.timedelta(seconds=int(audio_total_duration)))}")
+        print(f"- Somme des temps de parole (tous speakers cumules) : {str(datetime.timedelta(seconds=int(total_speech_duration)))}")
         print(f"- Nombre de speakers : {len(speaker_durations)}")
-        print(f"- Durée moyenne par speaker : {str(datetime.timedelta(seconds=int(average_duration)))}")
+        print(f"- Duree moyenne par speaker : {str(datetime.timedelta(seconds=int(average_duration)))}")
 
     # =========================
     #   MODE COMPLET
     # =========================
     else:
-        print("\n🔀 Mode : TRANSCRIPTION + DIARISATION.")
+        print("\nMode : TRANSCRIPTION + DIARISATION.")
 
         formatted_output = []
         assigned_speakers = []
 
         OVERLAP_THRESHOLD = 0.01
 
-        print("\n🔗 Association des segments transcription <-> speakers...")
+        print("\nAssociation des segments transcription <-> speakers...")
         for t_segment in tqdm(transcript_segments, desc="Matching segments"):
             best_speaker = "inconnu"
             best_score = 0.0
@@ -659,7 +659,7 @@ def main():
             text = t_segment["text"]
 
             formatted_output.append(
-                f"[{start_time} - {end_time}] 🗣️ Speaker {best_speaker}: {text}"
+                f"[{start_time} - {end_time}] Speaker {best_speaker}: {text}"
             )
             assigned_speakers.append(best_speaker)
 
@@ -672,11 +672,11 @@ def main():
             for speaker, duration in speaker_durations.items()
         }
 
-        print("\n⏳ Temps de parole par speaker :")
+        print("\nTemps de parole par speaker :")
         for speaker, duration in speaker_durations_formatted.items():
-            print(f"🗣️ Speaker {speaker}: {duration}")
+            print(f"Speaker {speaker}: {duration}")
 
-        print("\n📜 Aperçu de la transcription (non fusionnée) :")
+        print("\nApercu de la transcription (non fusionnee) :")
         for line in formatted_output[:10]:
             print(line)
         if len(formatted_output) > 10:
@@ -695,15 +695,15 @@ def main():
 
         with open(output_file, "w", encoding="utf-8") as f:
             f.write(header)
-            f.write("⏳ Temps de parole par speaker :\n")
+            f.write("Temps de parole par speaker :\n")
             for speaker, duration in speaker_durations_formatted.items():
-                f.write(f"🗣️ Speaker {speaker}: {duration}\n")
+                f.write(f"Speaker {speaker}: {duration}\n")
 
-            f.write("\n📜 Transcription fusionnée par speaker :\n\n")
+            f.write("\nTranscription fusionnee par speaker :\n\n")
             for s in segments_merged:
-                f.write(f"[{hhmmss(s['start'])}–{hhmmss(s['end'])}] {s['speaker']}: {s['text'].strip()}\n")
+                f.write(f"[{hhmmss(s['start'])}-{hhmmss(s['end'])}] {s['speaker']}: {s['text'].strip()}\n")
 
-        print(f"\n✅ Transcription complète sauvegardée dans : {output_file}")
+        print(f"\nOK Transcription complete sauvegardee dans : {output_file}")
 
         # Sous-titres (basés sur segments fusionnés)
         subs_segments = [
@@ -735,24 +735,24 @@ def main():
         total_speech_duration = sum(speaker_durations.values())
         average_duration = total_speech_duration / len(speaker_durations) if speaker_durations else 0.0
 
-        print(f"\n📊 Résumé global :")
-        print(f"- Durée totale de l'audio analysé : {str(datetime.timedelta(seconds=int(audio_total_duration)))}")
-        print(f"- Somme des temps de parole (tous speakers cumulés) : {str(datetime.timedelta(seconds=int(total_speech_duration)))}")
+        print(f"\nResume global :")
+        print(f"- Duree totale de l'audio analyse : {str(datetime.timedelta(seconds=int(audio_total_duration)))}")
+        print(f"- Somme des temps de parole (tous speakers cumules) : {str(datetime.timedelta(seconds=int(total_speech_duration)))}")
         print(f"- Nombre de speakers : {len(speaker_durations)}")
-        print(f"- Durée moyenne par speaker : {str(datetime.timedelta(seconds=int(average_duration)))}")
+        print(f"- Duree moyenne par speaker : {str(datetime.timedelta(seconds=int(average_duration)))}")
 
     # --- Nettoyage fichiers temporaires (TOUS) ---
     if keep_temp:
         for p in temp_files:
-            print(f"\n📂 Fichier temporaire conservé : {p}")
+            print(f"\nFichier temporaire conserve : {p}")
     else:
         for p in temp_files:
             try:
                 if p and os.path.exists(p) and p.startswith(tempfile.gettempdir()):
                     os.unlink(p)
-                    print(f"\n🧹 Fichier temporaire supprimé : {p}")
+                    print(f"\nFichier temporaire supprime : {p}")
             except OSError as e:
-                print(f"\n⚠️ Impossible de supprimer le fichier temporaire {p} : {e}")
+                print(f"\nATTENTION Impossible de supprimer le fichier temporaire {p} : {e}")
 
 
 if __name__ == "__main__":
