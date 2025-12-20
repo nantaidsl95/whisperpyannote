@@ -9,8 +9,8 @@
 
 **whisperpyannote** is a Python script that performs:
 
-- 📝 automatic speech transcription  
-- 🗣️ speaker diarization (who speaks when)  
+- 📝 Automatic speech transcription  
+- 🗣️ Speaker diarization (who speaks when)  
 - 🎥 on both audio and video files  
 
 It combines **Whisper (OpenAI)** for transcription and **Pyannote Audio** for speaker identification.
@@ -56,8 +56,8 @@ See 👉 [GUI.md](./GUI.md)
 **FFmpeg is required** and must be available in your system PATH.
 
 The script relies on FFmpeg to:
-- extract audio from video files
-- convert audio to mono 16 kHz WAV
+- Extract audio from video files
+- Convert audio to mono 16 kHz WAV
 
 > Audio/video inputs are automatically converted when needed.
 
@@ -245,9 +245,9 @@ Also detected automatically:
 | `--subs_no_speaker` | Do not prefix subtitles with speaker labels |
 
 Subtitles behavior:
-- transcription only → Whisper-based subtitles
-- full mode → speaker-merged subtitles
-- diarization only → no subtitles (no text)
+- Transcription only → Whisper-based subtitles
+- Full mode → speaker-merged subtitles
+- Diarization only → no subtitles (no text)
 
 ---
 
@@ -287,8 +287,8 @@ SPEAKER_01: 00:08:45
 
 ## ⚠️ Known Limitations
 
-- diarization accuracy may decrease with overlapping speakers
-- some segments may be assigned to an `unknown` speaker
+- Diarization accuracy may decrease with overlapping speakers
+- Some segments may be assigned to an `unknown` speaker
 - Whisper segmentation depends on the selected model
 
 ---
