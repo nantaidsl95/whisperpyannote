@@ -115,9 +115,28 @@ cd whisperpyannote
 ### 2️⃣ Install FFmpeg (required)
 
 ### 3️⃣ Create a virtual environment
-```
+
+**macOS / Linux**
+```bash
 python3 -m venv venv
 source venv/bin/activate
+```
+
+**Windows (PowerShell)**
+```powershell
+python -m venv venv
+venv\Scripts\Activate.ps1
+```
+> ⚠️ If you get a PowerShell execution policy error, run PowerShell **as Administrator** and execute:
+> ```powershell
+> Set-ExecutionPolicy RemoteSigned
+> ```
+> Then reopen your terminal and activate the virtual environment again.
+
+**Windows (Command Prompt / cmd.exe)**
+```cmd
+python -m venv venv
+venv\Scripts\activate.bat
 ```
 
 ### 4️⃣ Install Python dependencies
