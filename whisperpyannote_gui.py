@@ -1240,7 +1240,7 @@ class Main(QtWidgets.QWidget):
             except Exception as e:
                 raise RuntimeError(f"Impossible de creer le dossier de sortie: {out_dir}\n{e}")
 
-        args = [sys.executable, sp, inp, outp]
+        args = [sys.executable, "-u", sp, inp, outp]
 
         args += ["--whisper_model", str(self.whisper_model.currentData())]
 
