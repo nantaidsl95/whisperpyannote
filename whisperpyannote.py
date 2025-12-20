@@ -300,18 +300,33 @@ def get_hf_token(args) -> str:
 # =============================
 
 def load_whisper_model(whisper_model_choice: str):
-    device = "cuda" if torch.cuda.is_available() else "cpu"
+    # Priorité: CUDA > MPS > CPU
+    if torch.cuda.is_available():
+        device = "cuda"
+    elif getattr(torch.backends, "mps", None) is not None and torch.backends.mps.is_available():
+        device = "mps"
+    else:
+        device = "cpu"
+
     print(f"\nChargement du modele Whisper '{whisper_model_choice}' (device={device})...")
     model = whisper.load_model(whisper_model_choice, device=device)
-    return model
+    return model, device
 
 
-def run_whisper_transcription(model, audio_path: str, language: str = None):
+def run_whisper_transcription(model, audio_path: str, language: str = None, device: str = None):
     print("Transcription en cours... (cela peut prendre un moment)")
     transcribe_kwargs = {}
     if language:
         transcribe_kwargs["language"] = language
         print(f"Langue forcee pour Whisper : {language}")
+
+    # Important: fp16 uniquement sur CUDA (plus stable sur CPU/MPS)
+    if device is None:
+        try:
+            device = str(next(model.parameters()).device)
+        except Exception:
+            device = "cpu"
+    transcribe_kwargs["fp16"] = (device == "cuda")
 
     result = model.transcribe(audio_path, **transcribe_kwargs)
     return result
@@ -514,8 +529,8 @@ def main():
     sample_rate = None
 
     if not diarization_only:
-        model = load_whisper_model(whisper_model_choice)
-        result = run_whisper_transcription(model, input_path, language=language)
+        model, whisper_device = load_whisper_model(whisper_model_choice)
+        result = run_whisper_transcription(model, input_path, language=language, device=whisper_device)
         transcript_segments = result["segments"]
 
     if not transcription_only:
