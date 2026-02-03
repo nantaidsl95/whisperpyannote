@@ -144,6 +144,20 @@ venv\Scripts\activate.bat
 pip install -r requirements.txt
 ```
 
+### 4️⃣ Install CUDA PyTorch (Windows only)
+
+> ⚠️ Required to enable GPU acceleration with NVIDIA GPUs.
+
+```cmd
+pip uninstall -y torch torchaudio torchvision
+pip install torch torchaudio --index-url https://download.pytorch.org/whl/cu130
+```
+
+Verify:
+```cmd
+python -c "import torch; print(torch.cuda.is_available(), torch.version.cuda)"
+```
+
 ---
 
 ## 🔑 Hugging Face Token (required for Pyannote)
