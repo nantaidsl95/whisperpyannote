@@ -42,18 +42,6 @@ python whisperpyannote_gui.py
 
 ---
 
-## 📦 Requirements
-
-### Python dependencies
-
-In addition to the CLI dependencies, the GUI requires **PySide6**:
-
-```bash
-pip install -r requirements-gui.txt
-```
-
----
-
 ## 🔐 Hugging Face Token
 
 Speaker diarization requires a Hugging Face access token.
