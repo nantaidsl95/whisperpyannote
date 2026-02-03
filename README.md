@@ -33,14 +33,11 @@ Thanks to their authors, maintainers, and contributors for making high-quality o
 
 ## ✨ Features
 
-- 🎥 Automatic audio extraction from videos *(requires FFmpeg)*  
-- 🔄 Conversion to mono 16 kHz *(requires FFmpeg)*  
+- 🎥 Automatic audio extraction from videos
+- 🔄 Conversion to mono 16 kHz
 - 📝 Whisper transcription  
 - 🗣️ Pyannote diarization  
-- 🧠 Smart merging of segments  
-- ⏳ Speaking time per speaker
-- 🎬 Optional subtitle export (**SRT / VTT**)  
-- 📄 Optional structured output (**JSON**)  
+- 🎬 Optional subtitle export (**SRT / VTT**)  / 📄 Optional structured output (**JSON**)  
 
 ---
 
@@ -113,6 +110,26 @@ cd whisperpyannote
 ```
 
 ### 2️⃣ Install FFmpeg (required)
+
+**FFmpeg is required** and must be available in your system PATH.
+
+The script relies on FFmpeg to:
+- Extract audio from video files
+- Convert audio to mono 16 kHz WAV
+
+> Audio/video inputs are automatically converted when needed.
+
+### Install FFmpeg
+
+- **macOS (Homebrew)**  
+  ```
+  brew install ffmpeg
+  ```
+
+- **Ubuntu / Debian**  
+  ```
+  sudo apt install ffmpeg
+  ```
 
 ### 3️⃣ Create a virtual environment
 
