@@ -58,32 +58,6 @@ The script relies on FFmpeg to:
 
 > Audio/video inputs are automatically converted when needed.
 
-### Install FFmpeg
-
-- **macOS (Homebrew)**  
-  ```
-  brew install ffmpeg
-  ```
-
-- **Ubuntu / Debian**  
-  ```
-  sudo apt install ffmpeg
-  ```
-
-- **Windows**  
-  Download from https://ffmpeg.org/download.html  
-  and make sure `ffmpeg` is added to your PATH.
-
-- **Windows (via terminal – winget)**
-  ```
-  winget install Gyan.FFmpeg
-  ```
-  Then restart your terminal and verify:
-  ```
-  ffmpeg -version
-  ```
----
-
 # 🎙️ Recording with OBS (recommended)
 
 Steps:
@@ -130,6 +104,18 @@ The script relies on FFmpeg to:
   ```
   sudo apt install ffmpeg
   ```
+  
+  - **Windows**  
+  Download from https://ffmpeg.org/download.html  
+  and make sure `ffmpeg` is added to your PATH.
+
+- **Windows (via terminal – winget)**
+  ```
+  winget install Gyan.FFmpeg
+  ```
+  Then restart your terminal and verify:
+  ```
+  ffmpeg -version
 
 ### 3️⃣ Create a virtual environment
 
