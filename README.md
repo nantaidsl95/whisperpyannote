@@ -96,6 +96,7 @@ cd whisperpyannote
   Then restart your terminal and verify:
   ```
   ffmpeg -version
+  ```
 
 ### 3️⃣ Create a virtual environment
 
