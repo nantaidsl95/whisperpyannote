@@ -37,7 +37,7 @@ Thanks to their authors, maintainers, and contributors for making high-quality o
 - 🔄 Conversion to mono 16 kHz (FFmpeg)
 - 📝 Whisper transcription  
 - 🗣️ Pyannote diarization  
-- 🎬 Optional subtitle export (**SRT / VTT**)  / 📄 Optional structured output (**JSON**)  
+- 🎬 Optional subtitle export (SRT / VTT)  / 📄 Optional structured output (JSON)  
 
 ---
 
