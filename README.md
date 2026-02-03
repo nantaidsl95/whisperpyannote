@@ -48,7 +48,7 @@ See 👉 [GUI.md](./GUI.md)
 
 ---
 
-# 🎙️ Recording with OBS (recommended)
+# 🎙️ Recording with OBS (optionnal)
 
 Steps:
 
