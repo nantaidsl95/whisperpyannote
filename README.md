@@ -299,7 +299,6 @@ whisperpyannote/
 ├── LICENSE
 ├── README.md
 ├── requirements.txt
-├── requirements_gui.txt
 ├── whisperpyannote.py
 └── whisperpyannote_gui.py
 ```
