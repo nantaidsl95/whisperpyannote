@@ -85,7 +85,7 @@ cd whisperpyannote
   sudo apt install ffmpeg
   ```
   
-  - **Windows**  
+- **Windows**  
   Download from https://ffmpeg.org/download.html  
   and make sure `ffmpeg` is added to your PATH.
 
