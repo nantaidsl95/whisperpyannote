@@ -48,16 +48,6 @@ See 👉 [GUI.md](./GUI.md)
 
 ---
 
-## ⚙️ System Requirement
-
-**FFmpeg is required** and must be available in your system PATH.
-
-The script relies on FFmpeg to:
-- Extract audio from video files
-- Convert audio to mono 16 kHz WAV
-
-> Audio/video inputs are automatically converted when needed.
-
 # 🎙️ Recording with OBS (recommended)
 
 Steps:
@@ -85,6 +75,10 @@ cd whisperpyannote
 
 ### 2️⃣ Install FFmpeg
 
+The script relies on FFmpeg to:
+- Extract audio from video files
+- Convert audio to mono 16 kHz WAV
+- 
 - **macOS (Homebrew)**  
   ```
   brew install ffmpeg
