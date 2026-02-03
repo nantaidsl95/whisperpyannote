@@ -33,8 +33,8 @@ Thanks to their authors, maintainers, and contributors for making high-quality o
 
 ## ✨ Features
 
-- 🎥 Automatic audio extraction from videos
-- 🔄 Conversion to mono 16 kHz
+- 🎥 Automatic audio extraction from videos (FFmpeg)
+- 🔄 Conversion to mono 16 kHz (FFmpeg)
 - 📝 Whisper transcription  
 - 🗣️ Pyannote diarization  
 - 🎬 Optional subtitle export (**SRT / VTT**)  / 📄 Optional structured output (**JSON**)  
@@ -75,10 +75,6 @@ cd whisperpyannote
 
 ### 2️⃣ Install FFmpeg
 
-The script relies on FFmpeg to:
-- Extract audio from video files
-- Convert audio to mono 16 kHz WAV
-- 
 - **macOS (Homebrew)**  
   ```
   brew install ffmpeg
