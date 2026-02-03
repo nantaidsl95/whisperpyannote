@@ -83,17 +83,7 @@ git clone https://github.com/nantaidsl95/whisperpyannote.git
 cd whisperpyannote
 ```
 
-### 2️⃣ Install FFmpeg (required)
-
-**FFmpeg is required** and must be available in your system PATH.
-
-The script relies on FFmpeg to:
-- Extract audio from video files
-- Convert audio to mono 16 kHz WAV
-
-> Audio/video inputs are automatically converted when needed.
-
-### Install FFmpeg
+### 2️⃣ Install FFmpeg
 
 - **macOS (Homebrew)**  
   ```
